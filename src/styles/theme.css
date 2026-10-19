@@ -1,0 +1,728 @@
+/* ==========================================================================
+   VISUALMAP / TACVIEW — Design Tokens & UI Stylesheet
+   Compliant with DESIGN.md specifications
+   ========================================================================== */
+
+:root {
+  /* Typography */
+  --font-ui: "Inter", "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", Consolas, monospace;
+  --font-title: "Rajdhani", "Oxanium", "Inter", sans-serif;
+
+  /* Font Scales */
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 18px;
+  --fs-2xl: 22px;
+
+  /* Radius & Shadows */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-pill: 9999px;
+
+  /* Transition Durations */
+  --motion-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Tactical Dark Theme (Default)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  --bg-void: #05080D;
+  --bg-base: #0A1018;
+  --bg-panel: rgba(12, 20, 30, 0.82);
+  --bg-panel-solid: #0F1823;
+  --bg-elevated: #152232;
+  --bg-hover: rgba(63, 208, 255, 0.12);
+
+  --line-subtle: rgba(120, 170, 210, 0.12);
+  --line-default: rgba(120, 170, 210, 0.25);
+  --line-strong: rgba(120, 200, 255, 0.50);
+
+  --text-primary: #E6F1FA;
+  --text-secondary: #8FA6BA;
+  --text-muted: #506478;
+  --text-accent: #5CE1FF;
+
+  --accent: #3FD0FF;
+  --accent-glow: rgba(63, 208, 255, 0.35);
+  --accent-dim: #1B6F8A;
+
+  --iff-friend: #4DA8FF;
+  --iff-hostile: #FF4D5E;
+  --iff-neutral: #3DDC97;
+  --iff-unknown: #FFD84D;
+
+  --status-ok: #3DDC97;
+  --status-info: #5CE1FF;
+  --status-warn: #FFB547;
+  --status-danger: #FF4D5E;
+  --status-critical: #FF2E88;
+
+  --shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 12px var(--accent-glow);
+}
+
+/* --------------------------------------------------------------------------
+   Military Topo Paper Theme (Light Mode)
+   -------------------------------------------------------------------------- */
+[data-theme="light"] {
+  --bg-void: #D8DFE8;
+  --bg-base: #EEF2F6;
+  --bg-panel: rgba(255, 255, 255, 0.90);
+  --bg-panel-solid: #FFFFFF;
+  --bg-elevated: #E5EBF2;
+  --bg-hover: rgba(2, 132, 199, 0.10);
+
+  --line-subtle: rgba(40, 70, 100, 0.14);
+  --line-default: rgba(40, 70, 100, 0.28);
+  --line-strong: rgba(10, 100, 180, 0.65);
+
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-accent: #0284C7;
+
+  --accent: #0284C7;
+  --accent-glow: rgba(2, 132, 199, 0.25);
+  --accent-dim: #BAE6FD;
+
+  --iff-friend: #0072CE;
+  --iff-hostile: #D92B3A;
+  --iff-neutral: #009F6B;
+  --iff-unknown: #DF9B00;
+
+  --status-ok: #059669;
+  --status-info: #0284C7;
+  --status-warn: #D97706;
+  --status-danger: #DC2626;
+  --status-critical: #BE123C;
+
+  --shadow-panel: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 10px var(--accent-glow);
+}
+
+/* --------------------------------------------------------------------------
+   Global Layout & Reset
+   -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   Viewport & Canvas Stack
+   -------------------------------------------------------------------------- */
+.viewport-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-base);
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.map-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   TopBar (Command & Status Bar)
+   -------------------------------------------------------------------------- */
+.top-bar {
+  height: 48px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.op-badge {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-subtle);
+  letter-spacing: 0.05em;
+}
+
+.top-middle-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+.telemetry-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.telemetry-val {
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Standard Buttons & Controls
+   -------------------------------------------------------------------------- */
+.btn {
+  height: 30px;
+  padding: 0 10px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-default);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--line-strong);
+  color: var(--text-accent);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #05080D;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #5CE1FF;
+  box-shadow: var(--shadow-glow);
+  color: #05080D;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  justify-content: center;
+}
+
+.btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* --------------------------------------------------------------------------
+   Left ToolRail (HUD Actions)
+   -------------------------------------------------------------------------- */
+.tool-rail {
+  position: absolute;
+  top: 60px;
+  left: 14px;
+  width: 48px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  gap: 4px;
+  align-items: center;
+}
+
+.tool-group-divider {
+  width: 32px;
+  height: 1px;
+  background: var(--line-subtle);
+  margin: 4px 0;
+}
+
+.tool-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+  position: relative;
+}
+
+.tool-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-accent);
+}
+
+.tool-btn.active {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Tooltip on hover */
+.tool-btn[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--line-default);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-2xs);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 200;
+  box-shadow: var(--shadow-panel);
+}
+
+/* --------------------------------------------------------------------------
+   Sub-menu Drawer (for Unit Placement, Graphics, Analysis)
+   -------------------------------------------------------------------------- */
+.sub-toolbar {
+  position: absolute;
+  top: 60px;
+  left: 70px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-panel);
+  z-index: 89;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 170px;
+}
+
+.sub-toolbar.open {
+  display: flex;
+}
+
+.sub-toolbar-title {
+  font-family: var(--font-title);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-accent);
+  border-bottom: 1px solid var(--line-subtle);
+  padding-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.sub-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: var(--fs-xs);
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.sub-item-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  color: var(--text-accent);
+}
+
+.sub-item-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   Right Intel Drawer (Situational Intelligence & Properties)
+   -------------------------------------------------------------------------- */
+.intel-panel {
+  position: absolute;
+  top: 60px;
+  right: 14px;
+  width: 290px;
+  max-height: calc(100vh - 120px);
+  background: var(--bg-panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform var(--motion-normal);
+}
+
+.intel-panel.collapsed {
+  transform: translateX(310px);
+}
+
+.intel-header {
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--line-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.intel-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.intel-body {
+  padding: 12px 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.intel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-label {
+  font-family: var(--font-title);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+/* Force balance stats cards */
+.force-balance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.force-card {
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.force-card.friend {
+  border-left: 3px solid var(--iff-friend);
+}
+
+.force-card.hostile {
+  border-left: 3px solid var(--iff-hostile);
+}
+
+.force-count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.force-desc {
+  font-size: var(--fs-2xs);
+  color: var(--text-muted);
+}
+
+/* Form Controls */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: var(--fs-2xs);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.form-input, .form-select {
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding: 0 8px;
+  outline: none;
+  transition: border-color var(--motion-fast);
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--accent);
+}
+
+.range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.range-slider {
+  flex: 1;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.range-val {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-accent);
+  min-width: 38px;
+  text-align: right;
+}
+
+/* Layer visibility checklist */
+.layer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: var(--fs-xs);
+}
+
+.layer-switch {
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Probe & Telemetry Bar
+   -------------------------------------------------------------------------- */
+.bottom-bar {
+  height: 32px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-secondary);
+}
+
+.probe-cluster {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.probe-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.probe-val {
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Profile Drawer Modal (Bottom HUD)
+   -------------------------------------------------------------------------- */
+.profile-drawer {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 620px;
+  height: 180px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  z-index: 95;
+  display: none;
+  flex-direction: column;
+}
+
+.profile-drawer.open {
+  display: flex;
+}
+
+.profile-header {
+  height: 28px;
+  padding: 0 10px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--line-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-title);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-accent);
+}
+
+.profile-chart-canvas {
+  width: 100%;
+  height: 152px;
+}
+
+/* --------------------------------------------------------------------------
+   Settings Modal Dialog
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-box {
+  width: 440px;
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--line-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-footer {
+  padding: 10px 16px;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--line-default);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

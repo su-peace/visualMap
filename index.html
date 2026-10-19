@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VISUALMAP // 战术地图态势模拟推演系统</title>
+  <link rel="stylesheet" href="/src/styles/theme.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- TopBar: Command & Status Telemetry -->
+    <header class="top-bar">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <span>◈</span> VISUALMAP
+        </div>
+        <div class="op-badge" id="opNameBadge">OPERATION IRON VEIL · PHASE 2 / 4</div>
+      </div>
+
+      <div class="top-middle-telemetry">
+        <div class="telemetry-item">
+          <span>UTC</span>
+          <span class="telemetry-val" id="clockZulu">00:00:00Z</span>
+        </div>
+        <div class="telemetry-item">
+          <span>MET</span>
+          <span class="telemetry-val" id="missionTimer">T+02:14:33</span>
+        </div>
+        <div class="telemetry-item">
+          <span style="color: var(--status-ok);">●</span>
+          <span>LINK OK</span>
+        </div>
+        <div class="telemetry-item">
+          <span style="color: var(--status-warn);">⚠</span>
+          <span class="telemetry-val" id="threatCount">3 THREATS</span>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn btn-icon" id="btnThemeToggle" title="深浅双模切换 (Dark / Military Paper)">
+          <span id="themeIcon">☀️</span>
+        </button>
+        <button class="btn" id="btnTerrainConfig" title="配置地形参数与种子">
+          <span>⚙️ 地形参数</span>
+        </button>
+        <button class="btn" id="btnRandomizeTerrain" title="一键生成新随机战场">
+          <span>🎲 随机重置</span>
+        </button>
+        <div style="width: 1px; height: 18px; background: var(--line-default); margin: 0 4px;"></div>
+        <button class="btn btn-icon" id="btnUndo" title="撤销 (Ctrl+Z)">↶</button>
+        <button class="btn btn-icon" id="btnRedo" title="重做 (Ctrl+Y)">↷</button>
+        <div style="width: 1px; height: 18px; background: var(--line-default); margin: 0 4px;"></div>
+        <button class="btn" id="btnSaveProject" title="导出战术工程 (.tacmap.json)">
+          <span>💾 存档</span>
+        </button>
+        <button class="btn" id="btnLoadProject" title="读取战术工程">
+          <span>📂 读档</span>
+        </button>
+        <button class="btn btn-primary" id="btnExport4K" title="离屏超采样合成导出 4K 印刷级战术地图">
+          <span>🖼️ 4K 导出</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport Area -->
+    <main class="viewport-container" id="viewportContainer">
+      <canvas id="terrainCanvas" class="map-canvas"></canvas>
+      <canvas id="contourCanvas" class="map-canvas"></canvas>
+      <canvas id="overlayCanvas" class="map-canvas"></canvas>
+      <canvas id="hudCanvas" class="map-canvas" style="pointer-events: none;"></canvas>
+
+      <!-- Left ToolRail -->
+      <nav class="tool-rail" id="toolRail">
+        <button class="tool-btn active" id="toolSelect" data-mode="select" data-tip="光标选择 (V)">
+          🎯
+        </button>
+        <button class="tool-btn" id="toolPan" data-mode="pan" data-tip="漫游平移 (H)">
+          ✋
+        </button>
+
+        <div class="tool-group-divider"></div>
+
+        <button class="tool-btn" id="toolUnit" data-mode="unit" data-tip="军标标绘 (U)">
+          🛡️
+        </button>
+        <button class="tool-btn" id="toolGraphic" data-mode="graphic" data-tip="战术箭头/线面 (G)">
+          🏹
+        </button>
+
+        <div class="tool-group-divider"></div>
+
+        <button class="tool-btn" id="toolAnalysis" data-mode="analysis" data-tip="战术空间分析 (LOS/视界/剖面)">
+          🔭
+        </button>
+
+        <div class="tool-group-divider"></div>
+
+        <button class="tool-btn" id="toolResetView" data-tip="视口重置居中 (Space)">
+          ⛶
+        </button>
+      </nav>
+
+      <!-- Sub-Toolbar: Unit Placement Drawer -->
+      <div class="sub-toolbar" id="unitSubToolbar">
+        <div class="sub-toolbar-title">单位阵营与兵种</div>
+        
+        <div class="form-group">
+          <label class="form-label">阵营 Affiliation</label>
+          <select class="form-select" id="unitAffiliationSelect">
+            <option value="friend">友方 Friendly (蓝)</option>
+            <option value="hostile" selected>敌方 Hostile (红)</option>
+            <option value="neutral">中立 Neutral (绿)</option>
+            <option value="unknown">未知 Unknown (黄)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">兵种 Branch</label>
+          <select class="form-select" id="unitTypeSelect">
+            <option value="infantry">步兵 (Infantry)</option>
+            <option value="armor" selected>装甲战车 (Armor)</option>
+            <option value="mech">机械化步兵 (Mech)</option>
+            <option value="artillery">野战火炮 (Artillery)</option>
+            <option value="airdefense">防空导弹 (Air Defense)</option>
+            <option value="recon">侦察巡逻 (Recon)</option>
+            <option value="aviation">武装陆航 (Aviation)</option>
+            <option value="hq">指挥机关 (HQ)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">编制 Echelon</label>
+          <select class="form-select" id="unitEchelonSelect">
+            <option value="company">连 (Company - I)</option>
+            <option value="battalion" selected>营 (Battalion - II)</option>
+            <option value="regiment">团 (Regiment - III)</option>
+            <option value="brigade">旅 (Brigade - X)</option>
+            <option value="division">师 (Division - XX)</option>
+          </select>
+        </div>
+
+        <div style="font-size: var(--fs-2xs); color: var(--text-muted); margin-top: 4px;">
+          * 在地图任意位置点击即可放置该单位
+        </div>
+      </div>
+
+      <!-- Sub-Toolbar: Tactical Graphics Drawer -->
+      <div class="sub-toolbar" id="graphicSubToolbar">
+        <div class="sub-toolbar-title">战术标线与标面</div>
+        <button class="sub-item-btn active" data-graphic="attack_arrow">
+          <span>➔</span> 主攻方向箭头
+        </button>
+        <button class="sub-item-btn" data-graphic="support_arrow">
+          <span>⇢</span> 助攻方向虚线
+        </button>
+        <button class="sub-item-btn" data-graphic="front_line">
+          <span>╨</span> 前沿阻击防线
+        </button>
+        <button class="sub-item-btn" data-graphic="blocking_line">
+          <span>╪</span> 封锁阻绝线
+        </button>
+        <button class="sub-item-btn" data-graphic="assembly_area">
+          <span>⬡</span> 作战区/集结地域
+        </button>
+        <button class="sub-item-btn" data-graphic="radar_sector">
+          <span>📡</span> 警戒雷达扇区
+        </button>
+      </div>
+
+      <!-- Sub-Toolbar: Spatial Analysis Drawer -->
+      <div class="sub-toolbar" id="analysisSubToolbar">
+        <div class="sub-toolbar-title">战术空间分析</div>
+        <button class="sub-item-btn active" data-analysis="los">
+          <span>👁️</span> 两点通视 (LOS) 射线
+        </button>
+        <button class="sub-item-btn" data-analysis="viewshed">
+          <span>🌐</span> 360° 阵地视界阴影
+        </button>
+        <button class="sub-item-btn" data-analysis="profile">
+          <span>📈</span> 高程纵断面切片
+        </button>
+      </div>
+
+      <!-- Right Intel Panel -->
+      <aside class="intel-panel" id="intelPanel">
+        <div class="intel-header">
+          <div class="intel-title">
+            <span>📊</span> 态势情报中枢
+          </div>
+          <button class="btn btn-icon" id="btnToggleIntel" title="折叠/展开面板" style="width: 24px; height: 24px;">
+            ⮞
+          </button>
+        </div>
+
+        <div class="intel-body">
+          <!-- Force Balance Stats -->
+          <div class="intel-section">
+            <div class="section-label">战场兵力对比 (Force Ratio)</div>
+            <div class="force-balance-grid">
+              <div class="force-card friend">
+                <div class="force-desc">友方部队 (BLUE)</div>
+                <div class="force-count" id="statFriendCount">0</div>
+                <div class="force-desc" id="statFriendReady">战备率 100%</div>
+              </div>
+              <div class="force-card hostile">
+                <div class="force-desc">敌方目标 (RED)</div>
+                <div class="force-count" id="statHostileCount">0</div>
+                <div class="force-desc" id="statHostileReady">战备率 100%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected Unit/Graphic Properties Inspector -->
+          <div class="intel-section" id="inspectorSection">
+            <div class="section-label">当前选定图元属性</div>
+            <div id="inspectorContent" style="color: var(--text-muted); font-size: var(--fs-xs); padding: 8px 0;">
+              尚未选定任何单位或战术图元。请在地图上点击拾取。
+            </div>
+          </div>
+
+          <!-- Layers Display Tree -->
+          <div class="intel-section">
+            <div class="section-label">制图图层显隐管理</div>
+            <div class="layer-row">
+              <span>地形立体晕渲 (Terrain Shading)</span>
+              <input type="checkbox" class="layer-switch" id="layerTerrain" checked />
+            </div>
+            <div class="layer-row">
+              <span>等高线网络 (Contours)</span>
+              <input type="checkbox" class="layer-switch" id="layerContours" checked />
+            </div>
+            <div class="layer-row">
+              <span>军用方里网 (MGRS Grid)</span>
+              <input type="checkbox" class="layer-switch" id="layerGrid" checked />
+            </div>
+            <div class="layer-row">
+              <span>战术军标 (Military Units)</span>
+              <input type="checkbox" class="layer-switch" id="layerUnits" checked />
+            </div>
+            <div class="layer-row">
+              <span>战术箭头与标面 (Graphics)</span>
+              <input type="checkbox" class="layer-switch" id="layerGraphics" checked />
+            </div>
+            <div class="layer-row">
+              <span>地理与高地注记 (Toponyms)</span>
+              <input type="checkbox" class="layer-switch" id="layerToponyms" checked />
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Profile Bottom Drawer -->
+      <div class="profile-drawer" id="profileDrawer">
+        <div class="profile-header">
+          <span>高程纵断面切片 (TERRAIN CROSS-SECTION PROFILE)</span>
+          <button class="btn btn-icon" id="btnCloseProfile" style="width: 20px; height: 20px;">✕</button>
+        </div>
+        <canvas class="profile-chart-canvas" id="profileCanvas" width="620" height="152"></canvas>
+      </div>
+    </main>
+
+    <!-- Bottom Telemetry & Crosshair Probe Bar -->
+    <footer class="bottom-bar">
+      <div class="probe-cluster">
+        <div class="probe-item">
+          <span>LAT/LON:</span>
+          <span class="probe-val" id="probeLatLon">38°45'00" N, 121°38'00" E</span>
+        </div>
+        <div class="probe-item">
+          <span>MGRS:</span>
+          <span class="probe-val" id="probeMGRS">51S TH 8421 4288</span>
+        </div>
+        <div class="probe-item">
+          <span>ELEV:</span>
+          <span class="probe-val" id="probeElev">-- m</span>
+        </div>
+        <div class="probe-item">
+          <span>SLOPE:</span>
+          <span class="probe-val" id="probeSlope">-- °</span>
+        </div>
+        <div class="probe-item">
+          <span>TERRAIN:</span>
+          <span class="probe-val" id="probeType">--</span>
+        </div>
+      </div>
+
+      <div class="probe-cluster">
+        <div class="probe-item">
+          <span>GRID:</span>
+          <span class="probe-val" id="probeGridPos">-- , --</span>
+        </div>
+        <div class="probe-item">
+          <span>SEED:</span>
+          <span class="probe-val" id="mapSeedVal">1337</span>
+        </div>
+        <div class="probe-item">
+          <span>ZOOM:</span>
+          <span class="probe-val" id="zoomVal">1.0x</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Terrain Settings Modal Dialog -->
+    <div class="modal-overlay" id="terrainModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <span>战术地形与高程参数配置</span>
+          <button class="btn btn-icon" id="btnCloseModal" style="width: 24px; height: 24px;">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">随机种子 (Seed)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" class="form-input" id="cfgSeed" style="flex: 1;" value="1337" />
+              <button class="btn" id="btnGenSeed">随机</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">地貌形态模式 (Topological Shape)</label>
+            <select class="form-select" id="cfgShape">
+              <option value="island" selected>海岛/半岛群岛 (Island Falloff)</option>
+              <option value="ridge">险峻山脊/峡谷 (Ridged Multifractal)</option>
+              <option value="basin">内陆盆地/山谷 (Basin Falloff)</option>
+              <option value="terraces">防御阶地/台地 (Terraced Plateaus)</option>
+              <option value="natural">自然起伏山原 (Natural FBM)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">地表八度频次 (Octaves: 4 - 8)</label>
+            <div class="range-wrap">
+              <input type="range" class="range-slider" id="cfgOctaves" min="4" max="8" value="7" />
+              <span class="range-val" id="valOctaves">7</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">噪声尺度 (Scale: 100 - 400)</label>
+            <div class="range-wrap">
+              <input type="range" class="range-slider" id="cfgScale" min="100" max="400" value="220" />
+              <span class="range-val" id="valScale">220</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">最高峰海拔高度 (Height Scale: 600m - 2500m)</label>
+            <div class="range-wrap">
+              <input type="range" class="range-slider" id="cfgHeightScale" min="600" max="2500" step="50" value="1200" />
+              <span class="range-val" id="valHeightScale">1200m</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">等高距 (Contour Interval: 10m - 50m)</label>
+            <div class="range-wrap">
+              <input type="range" class="range-slider" id="cfgContourInterval" min="10" max="50" step="5" value="20" />
+              <span class="range-val" id="valContourInterval">20m</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" id="btnCancelModal">取消</button>
+          <button class="btn btn-primary" id="btnApplyTerrain">应用并重新生成</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
