@@ -88,17 +88,22 @@ export class MGRSGridRenderer {
     }
     ctx.stroke();
 
-    // 3. Grid labels along viewport borders
+    // 3. Grid labels along viewport borders with progressive density decimation
     ctx.font = '10px "JetBrains Mono", Consolas, monospace';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
 
+    // Label step decimation: at low zoom when lines are dense, step by 2 or 4 to avoid crowding
+    const labelStride = screenGridStep < 36 ? (screenGridStep < 22 ? 4 : 2) : 1;
+
     // X axis labels (Top and Bottom edges)
     for (let x = minX; x <= maxX; x += baseGridStep) {
+      const kmIdx = Math.round(x / baseGridStep);
+      if (kmIdx % labelStride !== 0) continue;
+
       const s = proj.gridToScreen(x, 0, vp);
       if (s[0] < 40 || s[0] > width - 40) continue;
 
-      const kmIdx = Math.round(x / baseGridStep);
       const label = (kmIdx + 80).toString().padStart(2, '0'); // e.g., 81, 82...
 
       // Top label
@@ -116,10 +121,12 @@ export class MGRSGridRenderer {
 
     // Y axis labels (Left and Right edges)
     for (let y = minY; y <= maxY; y += baseGridStep) {
+      const kmIdx = Math.round((proj.gridHeight - y) / baseGridStep);
+      if (kmIdx % labelStride !== 0) continue;
+
       const s = proj.gridToScreen(0, y, vp);
       if (s[1] < 60 || s[1] > height - 50) continue;
 
-      const kmIdx = Math.round((proj.gridHeight - y) / baseGridStep);
       const label = (kmIdx + 40).toString().padStart(2, '0'); // e.g., 41, 42...
 
       // Left label

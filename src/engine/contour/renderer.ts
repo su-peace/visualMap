@@ -69,30 +69,41 @@ export class ContourRenderer {
       : 'rgba(247, 245, 235, 0.92)';
     const labelColor = isDark ? '#E5A93C' : '#4A2A18';
 
-    // 1. Ultra-fast Path2D native rendering
+    // 1. Ultra-fast Path2D native rendering with Progressive Level of Detail (LOD)
     if (compiled) {
-      // Phase 1: Draw intermediate contours
-      ctx.beginPath();
-      ctx.strokeStyle = interStroke;
-      ctx.lineWidth = Math.max(0.75, 0.8 / scale);
-      ctx.stroke(compiled.interPath);
+      // Progressive LOD Phase 1: Draw intermediate contours
+      // When zoomed out (scale < 0.55), omit intermediate contours completely to eliminate GPU stroke lag.
+      // Between 0.55 and 0.85, smoothly fade in the lines with alpha interpolation.
+      if (scale >= 0.55) {
+        const interAlpha = scale >= 0.85 ? 1.0 : (scale - 0.55) / 0.30;
+        ctx.save();
+        ctx.globalAlpha = interAlpha;
+        ctx.beginPath();
+        ctx.strokeStyle = interStroke;
+        ctx.lineWidth = Math.max(0.75, 0.8 / scale);
+        ctx.stroke(compiled.interPath);
+        ctx.restore();
+      }
 
-      // Phase 2: Draw index contours
+      // Progressive LOD Phase 2: Draw index contours (Always drawn as structural backbone)
       ctx.beginPath();
       ctx.strokeStyle = indexStroke;
       ctx.lineWidth = Math.max(1.5, 1.8 / scale);
       ctx.stroke(compiled.indexPath);
 
-      // Phase 3: Dynamic elevation labels on index contours with viewport culling
-      if (compiled.labels.length > 0) {
+      // Progressive LOD Phase 3: Dynamic elevation labels on index contours with viewport & density decimation
+      // Only render labels when zoom >= 0.65 to prevent clutter
+      if (compiled.labels.length > 0 && scale >= 0.65) {
         const fontSize = Math.max(9, Math.round(11 / scale));
         ctx.font = `bold ${fontSize}px "JetBrains Mono", Consolas, monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         const b = viewBounds;
+        // Label step decimation: at low zoom (0.65-1.1), render every 2nd label to prevent crowding
+        const labelStep = scale < 1.1 ? 2 : 1;
 
-        for (let i = 0; i < compiled.labels.length; i++) {
+        for (let i = 0; i < compiled.labels.length; i += labelStep) {
           const lbl = compiled.labels[i];
           if (b && (lbl.x < b.minX || lbl.x > b.maxX || lbl.y < b.minY || lbl.y > b.maxY)) {
             continue;

@@ -15,16 +15,51 @@ export class TacticalGraphicsRenderer {
     theme: ThemeMode,
     timestamp: number = 0
   ): void {
-    if (graphics.length === 0) return;
+    const canvasW = ctx.canvas.width;
+    const canvasH = ctx.canvas.height;
+    const margin = 80;
 
     for (const g of graphics) {
       if (g.points.length === 0) continue;
 
-      ctx.save();
-      const colors = MilitarySymbolRenderer.getAffiliationColors(g.affiliation, theme);
-
       // Convert world points to screen points
       const screenPts = g.points.map((p) => proj.gridToScreen(p[0], p[1], vp));
+
+      // Viewport frustum culling: skip rendering geometries completely outside view
+      if (g.type === 'radar_sector' || g.type === 'fire_fan') {
+        const radiusPx = (g.radius || 150) * vp.zoom;
+        const c = screenPts[0];
+        if (
+          c[0] + radiusPx < 0 ||
+          c[0] - radiusPx > canvasW ||
+          c[1] + radiusPx < 0 ||
+          c[1] - radiusPx > canvasH
+        ) {
+          continue;
+        }
+      } else {
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+        for (const pt of screenPts) {
+          if (pt[0] < minX) minX = pt[0];
+          if (pt[0] > maxX) maxX = pt[0];
+          if (pt[1] < minY) minY = pt[1];
+          if (pt[1] > maxY) maxY = pt[1];
+        }
+        if (
+          maxX < -margin ||
+          minX > canvasW + margin ||
+          maxY < -margin ||
+          minY > canvasH + margin
+        ) {
+          continue;
+        }
+      }
+
+      ctx.save();
+      const colors = MilitarySymbolRenderer.getAffiliationColors(g.affiliation, theme);
 
       switch (g.type) {
         case 'attack_arrow':

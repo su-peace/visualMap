@@ -23,8 +23,10 @@ interface AdjNode {
   point: Point;
   n0: number;
   p0: Point;
+  u0: boolean;
   n1: number;
   p1: Point;
+  u1: boolean;
 }
 
 /**
@@ -63,24 +65,32 @@ export class ContourProcessor {
 
       let node1 = adj.get(k1);
       if (!node1) {
-        adj.set(k1, { point: seg.p1, n0: k2, p0: seg.p2, n1: -1, p1: [0, 0] });
+        adj.set(k1, { point: seg.p1, n0: k2, p0: seg.p2, u0: false, n1: -1, p1: [0, 0], u1: false });
       } else if (node1.n1 === -1 && node1.n0 !== k2) {
         node1.n1 = k2;
         node1.p1 = seg.p2;
+        node1.u1 = false;
       }
 
       let node2 = adj.get(k2);
       if (!node2) {
-        adj.set(k2, { point: seg.p2, n0: k1, p0: seg.p1, n1: -1, p1: [0, 0] });
+        adj.set(k2, { point: seg.p2, n0: k1, p0: seg.p1, u0: false, n1: -1, p1: [0, 0], u1: false });
       } else if (node2.n1 === -1 && node2.n0 !== k1) {
         node2.n1 = k1;
         node2.p1 = seg.p1;
+        node2.u1 = false;
       }
     }
 
-    // Set of visited undirected edges
-    const visitedEdges = new Set<string>();
-    const makeEdgeKey = (a: number, b: number) => (a < b ? `${a}|${b}` : `${b}|${a}`);
+    const markEdge = (uNode: AdjNode, vKey: number, uKey: number) => {
+      if (uNode.n0 === vKey) uNode.u0 = true;
+      else if (uNode.n1 === vKey) uNode.u1 = true;
+      const vNode = adj.get(vKey);
+      if (vNode) {
+        if (vNode.n0 === uKey) vNode.u0 = true;
+        else if (vNode.n1 === uKey) vNode.u1 = true;
+      }
+    };
 
     const polylines: ContourLine[] = [];
 
@@ -98,19 +108,23 @@ export class ContourProcessor {
       const startNode = adj.get(startKey);
       if (!startNode) return;
 
-      const neighborKeys = [startNode.n0];
-      const neighborPoints = [startNode.p0];
-      if (startNode.n1 !== -1) {
+      const neighborKeys: number[] = [];
+      const neighborPoints: Point[] = [];
+      if (startNode.n0 !== -1 && !startNode.u0) {
+        neighborKeys.push(startNode.n0);
+        neighborPoints.push(startNode.p0);
+      }
+      if (startNode.n1 !== -1 && !startNode.u1) {
         neighborKeys.push(startNode.n1);
         neighborPoints.push(startNode.p1);
       }
 
       for (let i = 0; i < neighborKeys.length; i++) {
         const nextKey = neighborKeys[i];
-        const ek = makeEdgeKey(startKey, nextKey);
-        if (visitedEdges.has(ek)) continue;
+        if (startNode.n0 === nextKey && startNode.u0) continue;
+        if (startNode.n1 === nextKey && startNode.u1) continue;
 
-        visitedEdges.add(ek);
+        markEdge(startNode, nextKey, startKey);
         const poly: Point[] = [startNode.point, neighborPoints[i]];
 
         let prevKey = startKey;
@@ -120,31 +134,22 @@ export class ContourProcessor {
           const currNode = adj.get(currKey);
           if (!currNode) break;
 
-          let foundNext = false;
-          // Check n0
-          if (currNode.n0 !== -1 && currNode.n0 !== prevKey) {
-            const edge = makeEdgeKey(currKey, currNode.n0);
-            if (!visitedEdges.has(edge)) {
-              visitedEdges.add(edge);
-              poly.push(currNode.p0);
-              prevKey = currKey;
-              currKey = currNode.n0;
-              foundNext = true;
-            }
-          }
-          // Check n1
-          if (!foundNext && currNode.n1 !== -1 && currNode.n1 !== prevKey) {
-            const edge = makeEdgeKey(currKey, currNode.n1);
-            if (!visitedEdges.has(edge)) {
-              visitedEdges.add(edge);
-              poly.push(currNode.p1);
-              prevKey = currKey;
-              currKey = currNode.n1;
-              foundNext = true;
-            }
+          let targetKey = -1;
+          let targetP: Point | null = null;
+          if (currNode.n0 !== -1 && currNode.n0 !== prevKey && !currNode.u0) {
+            targetKey = currNode.n0;
+            targetP = currNode.p0;
+          } else if (currNode.n1 !== -1 && currNode.n1 !== prevKey && !currNode.u1) {
+            targetKey = currNode.n1;
+            targetP = currNode.p1;
           }
 
-          if (!foundNext) break;
+          if (targetKey === -1 || !targetP) break;
+
+          markEdge(currNode, targetKey, currKey);
+          poly.push(targetP);
+          prevKey = currKey;
+          currKey = targetKey;
         }
 
         if (poly.length >= 2) {

@@ -113,15 +113,33 @@ export class ToponymGenerator {
     proj: CartoProjection,
     theme: ThemeMode
   ): void {
-    if (toponyms.length === 0 || vp.zoom < 0.5) return;
+    if (toponyms.length === 0 || vp.zoom < 0.45) return;
 
     ctx.save();
     const isDark = theme === 'dark';
+    const cWidth = ctx.canvas.width;
+    const cHeight = ctx.canvas.height;
+
+    // Progressive LOD Hierarchy based on zoom:
+    // - Tier 1: Macro View (0.45 <= zoom < 0.70): Strategic Major Peaks only (elevation >= 750m)
+    // - Tier 2: Tactical View (0.70 <= zoom < 1.20): All Peaks + Principal Settlements
+    // - Tier 3: Close Inspection (zoom >= 1.20): Full terrain annotation (passes, small hamlets, micro relief)
 
     for (const top of toponyms) {
-      const [sx, sy] = proj.gridToScreen(top.x, top.y, vp);
+      // 1. Progressive Zoom LOD Filter
+      if (vp.zoom < 0.70) {
+        if (top.type !== 'peak' || top.elevation < 750) continue;
+      } else if (vp.zoom < 1.20) {
+        if (top.type !== 'peak' && top.type !== 'settlement') continue;
+      }
 
-      // Icon & point
+      // 2. View Frustum Culling (eliminate offscreen label layout computation)
+      const [sx, sy] = proj.gridToScreen(top.x, top.y, vp);
+      if (sx < -80 || sx > cWidth + 80 || sy < -40 || sy > cHeight + 40) {
+        continue;
+      }
+
+      // 3. Render Icon & Point
       ctx.beginPath();
       if (top.type === 'peak') {
         // Triangle for peak
@@ -136,7 +154,7 @@ export class ToponymGenerator {
         ctx.font = 'bold 11px "HarmonyOS Sans SC", "PingFang SC", sans-serif';
         const labelText = `▲ ${top.name}`;
         const tm = ctx.measureText(labelText);
-        ctx.fillStyle = isDark ? 'rgba(10, 16, 24, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+        ctx.fillStyle = isDark ? 'rgba(10, 16, 24, 0.78)' : 'rgba(255, 255, 255, 0.88)';
         ctx.fillRect(sx - tm.width / 2 - 3, sy + 5, tm.width + 6, 14);
 
         ctx.fillStyle = isDark ? '#FFD84D' : '#92400E';
@@ -152,10 +170,26 @@ export class ToponymGenerator {
         ctx.font = '10px "HarmonyOS Sans SC", "PingFang SC", sans-serif';
         const labelText = `◎ ${top.name}`;
         const tm = ctx.measureText(labelText);
-        ctx.fillStyle = isDark ? 'rgba(10, 16, 24, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+        ctx.fillStyle = isDark ? 'rgba(10, 16, 24, 0.78)' : 'rgba(255, 255, 255, 0.88)';
         ctx.fillRect(sx - tm.width / 2 - 3, sy + 4, tm.width + 6, 13);
 
         ctx.fillStyle = isDark ? '#E6F1FA' : '#1E293B';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(labelText, sx, sy + 5);
+      } else {
+        // Passes and other micro terrain features (Tier 3)
+        ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = isDark ? '#38BDF8' : '#0284C7';
+        ctx.fill();
+
+        ctx.font = '9px "JetBrains Mono", Consolas, monospace';
+        const labelText = `⌂ ${top.name}`;
+        const tm = ctx.measureText(labelText);
+        ctx.fillStyle = isDark ? 'rgba(10, 16, 24, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+        ctx.fillRect(sx - tm.width / 2 - 2, sy + 4, tm.width + 4, 12);
+
+        ctx.fillStyle = isDark ? '#94A3B8' : '#475569';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.fillText(labelText, sx, sy + 5);

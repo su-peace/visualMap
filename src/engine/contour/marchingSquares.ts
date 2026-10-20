@@ -26,10 +26,11 @@ export class MarchingSquares {
     const segments: ContourSegment[] = [];
 
     // Helper for linear interpolation along edge
-    const interpolate = (v1: number, v2: number): number => {
+    const interp = (v1: number, v2: number): number => {
       const diff = v2 - v1;
-      if (Math.abs(diff) < 0.000001) return 0.5;
-      return Math.max(0.0, Math.min(1.0, (isovalue - v1) / diff));
+      if (diff > -0.000001 && diff < 0.000001) return 0.5;
+      const t = (isovalue - v1) / diff;
+      return t < 0 ? 0 : t > 1 ? 1 : t;
     };
 
     // Marching across grid cells with configurable step
@@ -51,73 +52,60 @@ export class MarchingSquares {
 
         if (cellIndex === 0 || cellIndex === 15) continue;
 
-        // Lazy edge calculation: only instantiate edges when required by cell topology
-        const top = (): Point => [x + step * interpolate(v0, v1), y];
-        const right = (): Point => [x + step, y + step * interpolate(v1, v2)];
-        const bottom = (): Point => [x + step * interpolate(v3, v2), y + step];
-        const left = (): Point => [x, y + step * interpolate(v0, v3)];
+        const eTop = (): Point => [x + step * interp(v0, v1), y];
+        const eRight = (): Point => [x + step, y + step * interp(v1, v2)];
+        const eBottom = (): Point => [x + step * interp(v3, v2), y + step];
+        const eLeft = (): Point => [x, y + step * interp(v0, v3)];
 
         switch (cellIndex) {
           case 1:
-            segments.push({ p1: left(), p2: bottom(), isovalue });
+          case 14:
+            segments.push({ p1: eLeft(), p2: eBottom(), isovalue });
             break;
           case 2:
-            segments.push({ p1: bottom(), p2: right(), isovalue });
+          case 13:
+            segments.push({ p1: eBottom(), p2: eRight(), isovalue });
             break;
           case 3:
-            segments.push({ p1: left(), p2: right(), isovalue });
+          case 12:
+            segments.push({ p1: eLeft(), p2: eRight(), isovalue });
             break;
           case 4:
-            segments.push({ p1: top(), p2: right(), isovalue });
+          case 11:
+            segments.push({ p1: eTop(), p2: eRight(), isovalue });
             break;
           case 5: {
             // Saddle ambiguity resolution via center average
             const avg = (v0 + v1 + v2 + v3) * 0.25;
             if (avg >= isovalue) {
-              segments.push({ p1: top(), p2: right(), isovalue });
-              segments.push({ p1: left(), p2: bottom(), isovalue });
+              segments.push({ p1: eTop(), p2: eRight(), isovalue });
+              segments.push({ p1: eLeft(), p2: eBottom(), isovalue });
             } else {
-              segments.push({ p1: top(), p2: left(), isovalue });
-              segments.push({ p1: right(), p2: bottom(), isovalue });
+              segments.push({ p1: eTop(), p2: eLeft(), isovalue });
+              segments.push({ p1: eRight(), p2: eBottom(), isovalue });
             }
             break;
           }
           case 6:
-            segments.push({ p1: top(), p2: bottom(), isovalue });
+          case 9:
+            segments.push({ p1: eTop(), p2: eBottom(), isovalue });
             break;
           case 7:
-            segments.push({ p1: top(), p2: left(), isovalue });
-            break;
           case 8:
-            segments.push({ p1: top(), p2: left(), isovalue });
-            break;
-          case 9:
-            segments.push({ p1: top(), p2: bottom(), isovalue });
+            segments.push({ p1: eTop(), p2: eLeft(), isovalue });
             break;
           case 10: {
             // Saddle ambiguity resolution
             const avg = (v0 + v1 + v2 + v3) * 0.25;
             if (avg >= isovalue) {
-              segments.push({ p1: top(), p2: left(), isovalue });
-              segments.push({ p1: right(), p2: bottom(), isovalue });
+              segments.push({ p1: eTop(), p2: eLeft(), isovalue });
+              segments.push({ p1: eRight(), p2: eBottom(), isovalue });
             } else {
-              segments.push({ p1: top(), p2: right(), isovalue });
-              segments.push({ p1: left(), p2: bottom(), isovalue });
+              segments.push({ p1: eTop(), p2: eRight(), isovalue });
+              segments.push({ p1: eLeft(), p2: eBottom(), isovalue });
             }
             break;
           }
-          case 11:
-            segments.push({ p1: top(), p2: right(), isovalue });
-            break;
-          case 12:
-            segments.push({ p1: left(), p2: right(), isovalue });
-            break;
-          case 13:
-            segments.push({ p1: bottom(), p2: right(), isovalue });
-            break;
-          case 14:
-            segments.push({ p1: left(), p2: bottom(), isovalue });
-            break;
         }
       }
     }

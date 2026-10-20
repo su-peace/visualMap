@@ -15,25 +15,26 @@ export class HillshadeRenderer {
   private static readonly LZ = Math.cos(HillshadeRenderer.ZENITH);
 
   /**
-   * Renders a complete RGBA raster from a normalized heightfield
+   * Fast 32-bit pixel compositing returning raw RGBA Uint8ClampedArray.
+   * Can be executed safely in both Web Worker and Main Thread.
    */
-  public static render(
+  public static renderRaw(
     heightfield: Float32Array,
     width: number,
     height: number,
     theme: ThemeMode,
     seaLevel: number = 0.18,
     zScale: number = 2.4
-  ): ImageData {
-    const imgData = new ImageData(width, height);
-    const data = imgData.data;
+  ): Uint8ClampedArray {
+    const rawData = new Uint8ClampedArray(width * height * 4);
+    const u32 = new Uint32Array(rawData.buffer);
     const lut = PaletteManager.getLut(theme);
 
-    // Coordinate grid spacing
     const cellSpacing = 1.0;
     const lx = HillshadeRenderer.LX;
     const ly = HillshadeRenderer.LY;
     const lz = HillshadeRenderer.LZ;
+    const isDark = theme === 'dark';
 
     for (let y = 0; y < height; y++) {
       const yPrev = y > 0 ? y - 1 : y;
@@ -63,47 +64,61 @@ export class HillshadeRenderer {
         const dzdy = ((g + 2.0 * h + i) - (a + 2.0 * b + c)) / (8.0 * cellSpacing);
 
         // Vector dot product Lambertian hillshade formula:
-        // N = (-dzdx, -dzdy, 1) / sqrt(dzdx^2 + dzdy^2 + 1)
-        // shade = N · L (8.8x faster than transcendental trig calls, algebraically identical)
         const invLen = 1.0 / Math.sqrt(dzdx * dzdx + dzdy * dzdy + 1.0);
         let shade = (-dzdx * lx - dzdy * ly + lz) * invLen;
-        shade = Math.max(0.0, Math.min(1.0, shade));
+        if (shade < 0.0) shade = 0.0;
+        else if (shade > 1.0) shade = 1.0;
 
         // Sample base color from LUT
-        const lutIdx = Math.max(0, Math.min(255, Math.floor(e * 255.0))) * 4;
-        const baseR = lut[lutIdx];
-        const baseG = lut[lutIdx + 1];
-        const baseB = lut[lutIdx + 2];
+        const lutIdx = ((e * 255.0) | 0) * 4;
+        const safeIdx = lutIdx < 0 ? 0 : lutIdx > 1020 ? 1020 : lutIdx;
+        const baseR = lut[safeIdx];
+        const baseG = lut[safeIdx + 1];
+        const baseB = lut[safeIdx + 2];
 
-        const pixelIdx = (rowCurr + x) * 4;
+        let r: number;
+        let gVal: number;
+        let bVal: number;
 
         if (e < seaLevel) {
-          // Water rendering: subtle light reflection, keep clean
+          // Water rendering: subtle light reflection
           const waterShade = 0.85 + (shade - 0.5) * 0.2;
-          data[pixelIdx] = Math.min(255, Math.round(baseR * waterShade));
-          data[pixelIdx + 1] = Math.min(255, Math.round(baseG * waterShade));
-          data[pixelIdx + 2] = Math.min(255, Math.round(baseB * waterShade));
-          data[pixelIdx + 3] = 255;
+          r = (baseR * waterShade + 0.5) | 0;
+          gVal = (baseG * waterShade + 0.5) | 0;
+          bVal = (baseB * waterShade + 0.5) | 0;
         } else {
           // Land rendering: realistic hillshade modulation
-          // Adjust contrast and intensity based on theme
-          let factor: number;
-          if (theme === 'dark') {
-            // High contrast relief in tactical dark
-            factor = 0.5 + shade * 0.9;
-          } else {
-            // Soft paper-like relief in military paper
-            factor = 0.65 + shade * 0.65;
-          }
-
-          data[pixelIdx] = Math.min(255, Math.round(baseR * factor));
-          data[pixelIdx + 1] = Math.min(255, Math.round(baseG * factor));
-          data[pixelIdx + 2] = Math.min(255, Math.round(baseB * factor));
-          data[pixelIdx + 3] = 255;
+          const factor = isDark ? 0.5 + shade * 0.9 : 0.65 + shade * 0.65;
+          r = (baseR * factor + 0.5) | 0;
+          gVal = (baseG * factor + 0.5) | 0;
+          bVal = (baseB * factor + 0.5) | 0;
         }
+
+        u32[rowCurr + x] =
+          0xff000000 |
+          ((bVal > 255 ? 255 : bVal) << 16) |
+          ((gVal > 255 ? 255 : gVal) << 8) |
+          (r > 255 ? 255 : r);
       }
     }
 
+    return rawData;
+  }
+
+  /**
+   * Renders a complete RGBA raster from a normalized heightfield
+   */
+  public static render(
+    heightfield: Float32Array,
+    width: number,
+    height: number,
+    theme: ThemeMode,
+    seaLevel: number = 0.18,
+    zScale: number = 2.4
+  ): ImageData {
+    const raw = HillshadeRenderer.renderRaw(heightfield, width, height, theme, seaLevel, zScale);
+    const imgData = new ImageData(width, height);
+    imgData.data.set(raw);
     return imgData;
   }
 }

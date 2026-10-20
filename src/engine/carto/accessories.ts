@@ -89,25 +89,42 @@ export class CartoAccessories {
   }
 
   /**
-   * Renders tactical compass with North arrow and magnetic declination
+   * Renders tactical compass with North arrow, magnetic declination (MN),
+   * true north (TN) indicator, and interactive tactical hover state.
    */
   public static renderCompass(
     ctx: CanvasRenderingContext2D,
     cx: number,
     cy: number,
     vp: ViewportTransform,
-    theme: ThemeMode
+    theme: ThemeMode,
+    isHovered: boolean = false,
+    radiusOverride?: number
   ): void {
     ctx.save();
 
     const isDark = theme === 'dark';
-    const bgCircle = isDark ? 'rgba(14, 18, 24, 0.92)' : 'rgba(255, 255, 255, 0.88)';
-    const rimColor = isDark ? 'rgba(148, 163, 184, 0.35)' : 'rgba(40, 70, 100, 0.3)';
+    const bgCircle = isDark ? 'rgba(14, 18, 24, 0.94)' : 'rgba(255, 255, 255, 0.94)';
+    const rimColor = isHovered
+      ? (isDark ? '#E5A93C' : '#B45309')
+      : (isDark ? 'rgba(148, 163, 184, 0.38)' : 'rgba(40, 70, 100, 0.35)');
     const northColor = '#EF4444';
     const southColor = isDark ? '#475569' : '#94A3B8';
     const textColor = isDark ? '#F1F5F9' : '#0F172A';
+    const accentColor = isDark ? '#E5A93C' : '#B45309';
 
-    const radius = 24;
+    const radius = radiusOverride || 24;
+
+    // Hover glow and tactical reticle ring
+    if (isHovered) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius + 4, 0, Math.PI * 2);
+      ctx.strokeStyle = isDark ? 'rgba(229, 169, 60, 0.45)' : 'rgba(180, 83, 9, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
 
     // Background circle
     ctx.beginPath();
@@ -115,28 +132,44 @@ export class CartoAccessories {
     ctx.fillStyle = bgCircle;
     ctx.fill();
     ctx.strokeStyle = rimColor;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = isHovered ? 2 : 1.5;
     ctx.stroke();
 
-    // Degree markings
+    // Rotating dial
     ctx.save();
     ctx.translate(cx, cy);
-    ctx.rotate(vp.rotation || 0);
+    const rot = vp.rotation || 0;
+    ctx.rotate(rot);
 
-    ctx.strokeStyle = isDark ? 'rgba(120, 170, 210, 0.4)' : 'rgba(40, 70, 100, 0.4)';
-    ctx.lineWidth = 1;
+    // Degree markings
+    ctx.strokeStyle = isDark ? 'rgba(120, 170, 210, 0.45)' : 'rgba(40, 70, 100, 0.45)';
     for (let i = 0; i < 12; i++) {
       ctx.rotate((30 * Math.PI) / 180);
+      const isCardinal = i % 3 === 2; // Every 90 deg
+      ctx.lineWidth = isCardinal ? 1.5 : 1;
       ctx.beginPath();
-      ctx.moveTo(0, -radius + (i % 3 === 0 ? 5 : 3));
+      ctx.moveTo(0, -radius + (isCardinal ? 6 : 3.5));
       ctx.lineTo(0, -radius);
       ctx.stroke();
     }
 
-    // North Needle
+    // Magnetic North (MN) declination line (~6.5° W declination)
+    const declinationRad = (-6.5 * Math.PI) / 180;
+    ctx.save();
+    ctx.rotate(declinationRad);
+    ctx.strokeStyle = isDark ? '#38BDF8' : '#0284C7';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(0, -radius + 7);
+    ctx.lineTo(0, -2);
+    ctx.stroke();
+    ctx.restore();
+
+    // North Needle (True North - Red)
     ctx.beginPath();
     ctx.moveTo(0, -radius + 6);
-    ctx.lineTo(4, 0);
+    ctx.lineTo(3.5, 0);
     ctx.lineTo(0, -2);
     ctx.closePath();
     ctx.fillStyle = northColor;
@@ -145,7 +178,7 @@ export class CartoAccessories {
     // South Needle
     ctx.beginPath();
     ctx.moveTo(0, radius - 6);
-    ctx.lineTo(-4, 0);
+    ctx.lineTo(-3.5, 0);
     ctx.lineTo(0, 2);
     ctx.closePath();
     ctx.fillStyle = southColor;
@@ -159,12 +192,25 @@ export class CartoAccessories {
 
     ctx.restore();
 
-    // "N" label
+    // "N" label at top
     ctx.font = 'bold 9px "Rajdhani", Inter, sans-serif';
     ctx.fillStyle = northColor;
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('N', cx, cy - radius - 2);
+
+    // Heading or Action Readout at bottom
+    ctx.font = '700 8px "JetBrains Mono", Consolas, monospace';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText('N', cx, cy - radius - 11);
+    if (isHovered) {
+      ctx.fillStyle = accentColor;
+      ctx.fillText('RESET N', cx, cy + radius + 4);
+    } else {
+      const headingDeg = Math.round((-rot * 180 / Math.PI + 360) % 360);
+      ctx.fillStyle = isDark ? '#94A3B8' : '#475569';
+      ctx.fillText(`${headingDeg.toString().padStart(3, '0')}° TN`, cx, cy + radius + 4);
+    }
 
     ctx.restore();
   }
