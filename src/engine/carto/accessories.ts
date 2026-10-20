@@ -19,11 +19,11 @@ export class CartoAccessories {
     ctx.save();
 
     const isDark = theme === 'dark';
-    const textColor = isDark ? '#E6F1FA' : '#0F172A';
-    const barPrimary = isDark ? '#5CE1FF' : '#0284C7';
-    const barSecondary = isDark ? '#152232' : '#CBD5E1';
-    const bgBox = isDark ? 'rgba(10, 16, 24, 0.75)' : 'rgba(255, 255, 255, 0.85)';
-    const borderColor = isDark ? 'rgba(120, 170, 210, 0.25)' : 'rgba(40, 70, 100, 0.25)';
+    const textColor = isDark ? '#F1F5F9' : '#0F172A';
+    const barPrimary = isDark ? '#E5A93C' : '#B45309';
+    const barSecondary = isDark ? '#1B212B' : '#CBD5E1';
+    const bgBox = isDark ? 'rgba(14, 18, 24, 0.92)' : 'rgba(255, 255, 255, 0.88)';
+    const borderColor = isDark ? 'rgba(148, 163, 184, 0.28)' : 'rgba(40, 70, 100, 0.25)';
 
     // 1024 units = 10,000m (10km). 1 unit = ~9.765m.
     // Screen pixel distance = world_units * zoom
@@ -63,7 +63,7 @@ export class CartoAccessories {
       ctx.fillStyle = i % 2 === 0 ? barPrimary : barSecondary;
       ctx.fillRect(x + i * segWidthPx, y, segWidthPx, barHeight);
     }
-    ctx.strokeStyle = isDark ? '#E6F1FA' : '#0F172A';
+    ctx.strokeStyle = isDark ? '#E5A93C' : '#0F172A';
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, totalWidthPx, barHeight);
 
@@ -101,11 +101,11 @@ export class CartoAccessories {
     ctx.save();
 
     const isDark = theme === 'dark';
-    const bgCircle = isDark ? 'rgba(10, 16, 24, 0.75)' : 'rgba(255, 255, 255, 0.85)';
-    const rimColor = isDark ? 'rgba(120, 170, 210, 0.3)' : 'rgba(40, 70, 100, 0.3)';
-    const northColor = '#FF4D5E';
-    const southColor = isDark ? '#506478' : '#94A3B8';
-    const textColor = isDark ? '#E6F1FA' : '#0F172A';
+    const bgCircle = isDark ? 'rgba(14, 18, 24, 0.92)' : 'rgba(255, 255, 255, 0.88)';
+    const rimColor = isDark ? 'rgba(148, 163, 184, 0.35)' : 'rgba(40, 70, 100, 0.3)';
+    const northColor = '#EF4444';
+    const southColor = isDark ? '#475569' : '#94A3B8';
+    const textColor = isDark ? '#F1F5F9' : '#0F172A';
 
     const radius = 24;
 

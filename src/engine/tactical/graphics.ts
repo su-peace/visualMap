@@ -50,7 +50,7 @@ export class TacticalGraphicsRenderer {
 
       // If graphic is selected, draw control handles
       if (g.selected) {
-        ctx.fillStyle = theme === 'dark' ? '#3FD0FF' : '#0284C7';
+        ctx.fillStyle = theme === 'dark' ? '#E5A93C' : '#B45309';
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1.5;
         for (const pt of screenPts) {

@@ -3,64 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VISUALMAP // 战术地图态势模拟推演系统</title>
+  <title>VISUALMAP // 现代战争战术态势推演系统 (C4ISR TACVIEW)</title>
   <link rel="stylesheet" href="/src/styles/theme.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
-    <!-- TopBar: Command & Status Telemetry -->
+    <!-- TopBar: Command & Status Telemetry (MW C4ISR Header) -->
     <header class="top-bar">
       <div class="brand-section">
         <div class="brand-logo">
-          <span>◈</span> VISUALMAP
+          <span class="brand-icon">◈</span>
+          <span>TF-141 // VISUALMAP</span>
         </div>
-        <div class="op-badge" id="opNameBadge">OPERATION IRON VEIL · PHASE 2 / 4</div>
+        <div class="op-badge" id="opNameBadge">OP: PHANTOM DART // P-02</div>
       </div>
 
       <div class="top-middle-telemetry">
         <div class="telemetry-item">
-          <span>UTC</span>
+          <span class="tele-tag">ZULU</span>
           <span class="telemetry-val" id="clockZulu">00:00:00Z</span>
         </div>
         <div class="telemetry-item">
-          <span>MET</span>
-          <span class="telemetry-val" id="missionTimer">T+02:14:33</span>
+          <span class="tele-tag">MET</span>
+          <span class="telemetry-val accent" id="missionTimer">T+02:14:33</span>
         </div>
         <div class="telemetry-item">
-          <span style="color: var(--status-ok);">●</span>
-          <span>LINK OK</span>
+          <span class="telemetry-dot" style="background: var(--status-ok);"></span>
+          <span style="color: var(--status-ok); font-weight: 600;">LINK OK</span>
         </div>
         <div class="telemetry-item">
-          <span style="color: var(--status-warn);">⚠</span>
-          <span class="telemetry-val" id="threatCount">3 THREATS</span>
+          <span class="telemetry-dot" style="background: var(--status-danger);"></span>
+          <span class="telemetry-val" id="threatCount" style="color: var(--status-danger);">3 THREATS</span>
         </div>
       </div>
 
       <div class="top-actions">
-        <button class="btn btn-icon" id="btnThemeToggle" title="深浅双模切换 (Dark / Military Paper)">
-          <span id="themeIcon">☀️</span>
+        <button class="btn btn-icon" id="btnThemeToggle" title="深浅双模切换 (Tactical Dark / NATO Topo Paper)">
+          <svg id="themeIconSvg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         </button>
-        <button class="btn" id="btnTerrainConfig" title="配置地形参数与种子">
-          <span>⚙️ 地形参数</span>
+        <button class="btn" id="btnTerrainConfig" title="配置地形参数与高程噪声">
+          <svg viewBox="0 0 24 24"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6m2-6h6m2 8h6"/></svg>
+          <span>地形参数</span>
         </button>
-        <button class="btn" id="btnRandomizeTerrain" title="一键生成新随机战场">
-          <span>🎲 随机重置</span>
+        <button class="btn" id="btnRandomizeTerrain" title="一键生成新随机战场地形">
+          <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          <span>随机重置</span>
         </button>
         <div style="width: 1px; height: 18px; background: var(--line-default); margin: 0 4px;"></div>
-        <button class="btn btn-icon" id="btnUndo" title="撤销 (Ctrl+Z)">↶</button>
-        <button class="btn btn-icon" id="btnRedo" title="重做 (Ctrl+Y)">↷</button>
+        <button class="btn btn-icon" id="btnUndo" title="撤销 (Ctrl+Z)">
+          <svg viewBox="0 0 24 24"><path d="M3 7v6h6M3 13a9 9 0 0 1 15-6.7L21 9"/></svg>
+        </button>
+        <button class="btn btn-icon" id="btnRedo" title="重做 (Ctrl+Y)">
+          <svg viewBox="0 0 24 24"><path d="M21 7v6h-6M21 13a9 9 0 0 0-15-6.7L3 9"/></svg>
+        </button>
         <div style="width: 1px; height: 18px; background: var(--line-default); margin: 0 4px;"></div>
         <button class="btn" id="btnSaveProject" title="导出战术工程 (.tacmap.json)">
-          <span>💾 存档</span>
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>存档</span>
         </button>
         <button class="btn" id="btnLoadProject" title="读取战术工程">
-          <span>📂 读档</span>
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>读档</span>
         </button>
         <button class="btn btn-primary" id="btnExport4K" title="离屏超采样合成导出 4K 印刷级战术地图">
-          <span>🖼️ 4K 导出</span>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>4K 导出</span>
         </button>
       </div>
     </header>
@@ -72,62 +82,65 @@
       <canvas id="overlayCanvas" class="map-canvas"></canvas>
       <canvas id="hudCanvas" class="map-canvas" style="pointer-events: none;"></canvas>
 
-      <!-- Left ToolRail -->
+      <!-- Left ToolRail (Combat Station Utility Dock) -->
       <nav class="tool-rail" id="toolRail">
-        <button class="tool-btn active" id="toolSelect" data-mode="select" data-tip="光标选择 (V)">
-          🎯
+        <button class="tool-btn active" id="toolSelect" data-mode="select" data-tip="[V] 光标选择 (SELECT)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
         </button>
-        <button class="tool-btn" id="toolPan" data-mode="pan" data-tip="漫游平移 (H)">
-          ✋
-        </button>
-
-        <div class="tool-group-divider"></div>
-
-        <button class="tool-btn" id="toolUnit" data-mode="unit" data-tip="军标标绘 (U)">
-          🛡️
-        </button>
-        <button class="tool-btn" id="toolGraphic" data-mode="graphic" data-tip="战术箭头/线面 (G)">
-          🏹
+        <button class="tool-btn" id="toolPan" data-mode="pan" data-tip="[H] 战术漫游 (PAN)">
+          <svg viewBox="0 0 24 24"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
         </button>
 
         <div class="tool-group-divider"></div>
 
-        <button class="tool-btn" id="toolAnalysis" data-mode="analysis" data-tip="战术空间分析 (LOS/视界/剖面)">
-          🔭
+        <button class="tool-btn" id="toolUnit" data-mode="unit" data-tip="[U] 军标标绘 (MIL-STD)">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </button>
+        <button class="tool-btn" id="toolGraphic" data-mode="graphic" data-tip="[G] 战术矢量 (VECTORS)">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="12 5 19 5 19 12"/></svg>
         </button>
 
         <div class="tool-group-divider"></div>
 
-        <button class="tool-btn" id="toolResetView" data-tip="视口重置居中 (Space)">
-          ⛶
+        <button class="tool-btn" id="toolAnalysis" data-mode="analysis" data-tip="[S] 战术空间分析 (ISR/LOS)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m12 12 6-3"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6"/></svg>
+        </button>
+
+        <div class="tool-group-divider"></div>
+
+        <button class="tool-btn" id="toolResetView" data-tip="[SPACE] 视口复位正北 (CENTER)">
+          <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><polyline points="21 15 21 21 15 21"/><polyline points="3 9 3 3 9 3"/></svg>
         </button>
       </nav>
 
       <!-- Sub-Toolbar: Unit Placement Drawer -->
       <div class="sub-toolbar" id="unitSubToolbar">
-        <div class="sub-toolbar-title">单位阵营与兵种</div>
+        <div class="sub-toolbar-title">
+          <span>单位阵营与兵种</span>
+          <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted);">M-03</span>
+        </div>
         
         <div class="form-group">
           <label class="form-label">阵营 Affiliation</label>
           <select class="form-select" id="unitAffiliationSelect">
-            <option value="friend">友方 Friendly (蓝)</option>
-            <option value="hostile" selected>敌方 Hostile (红)</option>
-            <option value="neutral">中立 Neutral (绿)</option>
-            <option value="unknown">未知 Unknown (黄)</option>
+            <option value="friend">友方 Friendly (NVG绿)</option>
+            <option value="hostile" selected>敌方 Hostile (热成像红)</option>
+            <option value="neutral">中立 Neutral (空域蓝)</option>
+            <option value="unknown">未知 Unknown (警示黄)</option>
           </select>
         </div>
 
         <div class="form-group">
           <label class="form-label">兵种 Branch</label>
           <select class="form-select" id="unitTypeSelect">
-            <option value="infantry">步兵 (Infantry)</option>
-            <option value="armor" selected>装甲战车 (Armor)</option>
-            <option value="mech">机械化步兵 (Mech)</option>
-            <option value="artillery">野战火炮 (Artillery)</option>
-            <option value="airdefense">防空导弹 (Air Defense)</option>
-            <option value="recon">侦察巡逻 (Recon)</option>
-            <option value="aviation">武装陆航 (Aviation)</option>
-            <option value="hq">指挥机关 (HQ)</option>
+            <option value="infantry">轻型步兵 (Infantry)</option>
+            <option value="armor" selected>装甲突击 (Armor / MBT)</option>
+            <option value="mech">机械化重装 (Mech Inf)</option>
+            <option value="artillery">自行野炮 (Artillery / MLRS)</option>
+            <option value="airdefense">防空防导 (Air Defense / SAM)</option>
+            <option value="recon">前沿侦察 (Recon / Scout)</option>
+            <option value="aviation">武装陆航 (Aviation / CAS)</option>
+            <option value="hq">指挥机关 (HQ / TOC)</option>
           </select>
         </div>
 
@@ -142,88 +155,107 @@
           </select>
         </div>
 
-        <div style="font-size: var(--fs-2xs); color: var(--text-muted); margin-top: 4px;">
-          * 在地图任意位置点击即可放置该单位
+        <div style="font-size: var(--fs-2xs); color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px;">
+          * 点击地图任意坐标即刻部署单位
         </div>
       </div>
 
       <!-- Sub-Toolbar: Tactical Graphics Drawer -->
       <div class="sub-toolbar" id="graphicSubToolbar">
-        <div class="sub-toolbar-title">战术标线与标面</div>
+        <div class="sub-toolbar-title">
+          <span>战术标线与标面</span>
+          <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted);">M-04</span>
+        </div>
         <button class="sub-item-btn active" data-graphic="attack_arrow">
-          <span>➔</span> 主攻方向箭头
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span>主攻方向箭头</span>
         </button>
         <button class="sub-item-btn" data-graphic="support_arrow">
-          <span>⇢</span> 助攻方向虚线
+          <svg viewBox="0 0 24 24" stroke-dasharray="3 3"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span>助攻方向虚线</span>
         </button>
         <button class="sub-item-btn" data-graphic="front_line">
-          <span>╨</span> 前沿阻击防线
+          <svg viewBox="0 0 24 24"><path d="M3 12h18M6 8v8M12 8v8M18 8v8"/></svg>
+          <span>前沿阻击防线</span>
         </button>
         <button class="sub-item-btn" data-graphic="blocking_line">
-          <span>╪</span> 封锁阻绝线
+          <svg viewBox="0 0 24 24"><path d="M3 12h18M7 9l4 6M13 9l4 6"/></svg>
+          <span>封锁阻绝线</span>
         </button>
         <button class="sub-item-btn" data-graphic="assembly_area">
-          <span>⬡</span> 作战区/集结地域
+          <svg viewBox="0 0 24 24"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+          <span>作战区/集结地域</span>
         </button>
         <button class="sub-item-btn" data-graphic="radar_sector">
-          <span>📡</span> 警戒雷达扇区
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10l-10 0z"/></svg>
+          <span>警戒雷达扇区</span>
         </button>
       </div>
 
       <!-- Sub-Toolbar: Spatial Analysis Drawer -->
       <div class="sub-toolbar" id="analysisSubToolbar">
-        <div class="sub-toolbar-title">战术空间分析</div>
+        <div class="sub-toolbar-title">
+          <span>战术空间分析</span>
+          <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted);">M-05</span>
+        </div>
         <button class="sub-item-btn active" data-analysis="los">
-          <span>👁️</span> 两点通视 (LOS) 射线
+          <svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>两点通视 (LOS) 射线</span>
         </button>
         <button class="sub-item-btn" data-analysis="viewshed">
-          <span>🌐</span> 360° 阵地视界阴影
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20M2 12h20"/></svg>
+          <span>360° 阵地视界阴影</span>
         </button>
         <button class="sub-item-btn" data-analysis="profile">
-          <span>📈</span> 高程纵断面切片
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>高程纵断面切片</span>
         </button>
       </div>
 
-      <!-- Right Intel Panel -->
+      <!-- Right Intel Panel (MW Dossier & Situation Center) -->
       <aside class="intel-panel" id="intelPanel">
         <div class="intel-header">
           <div class="intel-title">
-            <span>📊</span> 态势情报中枢
+            <span class="intel-tag">SEC.01</span>
+            <span>态势情报中枢 (INTEL)</span>
           </div>
           <button class="btn btn-icon" id="btnToggleIntel" title="折叠/展开面板" style="width: 24px; height: 24px;">
-            ⮞
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
 
         <div class="intel-body">
           <!-- Force Balance Stats -->
           <div class="intel-section">
-            <div class="section-label">战场兵力对比 (Force Ratio)</div>
+            <div class="section-label">
+              <span>兵力对比 (FORCE RATIO)</span>
+              <span style="color: var(--accent); font-family: var(--font-mono); font-size: 9px;">BFT-ACTIVE</span>
+            </div>
             <div class="force-balance-grid">
               <div class="force-card friend">
-                <div class="force-desc">友方部队 (BLUE)</div>
+                <div class="force-desc">友方部队 (BLUFOR)</div>
                 <div class="force-count" id="statFriendCount">0</div>
-                <div class="force-desc" id="statFriendReady">战备率 100%</div>
+                <div class="force-desc" id="statFriendReady" style="color: var(--status-ok);">战备率 100%</div>
               </div>
               <div class="force-card hostile">
-                <div class="force-desc">敌方目标 (RED)</div>
+                <div class="force-desc">敌方目标 (OPFOR)</div>
                 <div class="force-count" id="statHostileCount">0</div>
-                <div class="force-desc" id="statHostileReady">战备率 100%</div>
+                <div class="force-desc" id="statHostileReady" style="color: var(--status-danger);">战备率 100%</div>
               </div>
             </div>
           </div>
 
           <!-- Selected Unit/Graphic Properties Inspector -->
           <div class="intel-section" id="inspectorSection">
-            <div class="section-label">当前选定图元属性</div>
-            <div id="inspectorContent" style="color: var(--text-muted); font-size: var(--fs-xs); padding: 8px 0;">
+            <div class="section-label">选定图元属性 (INSPECTOR)</div>
+            <div id="inspectorContent" style="color: var(--text-muted); font-size: var(--fs-xs); font-family: var(--font-mono); padding: 8px 0;">
               尚未选定任何单位或战术图元。请在地图上点击拾取。
             </div>
           </div>
 
           <!-- Layers Display Tree -->
           <div class="intel-section">
-            <div class="section-label">制图图层显隐管理</div>
+            <div class="section-label">图层显示管理 (CHANNELS)</div>
             <div class="layer-row">
               <span>地形立体晕渲 (Terrain Shading)</span>
               <input type="checkbox" class="layer-switch" id="layerTerrain" checked />
@@ -255,14 +287,14 @@
       <!-- Profile Bottom Drawer -->
       <div class="profile-drawer" id="profileDrawer">
         <div class="profile-header">
-          <span>高程纵断面切片 (TERRAIN CROSS-SECTION PROFILE)</span>
+          <span>// 高程纵断面切片 (TERRAIN CROSS-SECTION PROFILE)</span>
           <button class="btn btn-icon" id="btnCloseProfile" style="width: 20px; height: 20px;">✕</button>
         </div>
         <canvas class="profile-chart-canvas" id="profileCanvas" width="620" height="152"></canvas>
       </div>
     </main>
 
-    <!-- Bottom Telemetry & Crosshair Probe Bar -->
+    <!-- Bottom Telemetry & Crosshair Probe Bar (Mil-Spec Telemetry) -->
     <footer class="bottom-bar">
       <div class="probe-cluster">
         <div class="probe-item">
@@ -298,16 +330,16 @@
         </div>
         <div class="probe-item">
           <span>ZOOM:</span>
-          <span class="probe-val" id="zoomVal">1.0x</span>
+          <span class="probe-val" id="zoomVal">1.00x</span>
         </div>
       </div>
     </footer>
 
-    <!-- Terrain Settings Modal Dialog -->
+    <!-- Terrain Settings Modal Dialog (Tactical Terminal) -->
     <div class="modal-overlay" id="terrainModal">
       <div class="modal-box">
         <div class="modal-header">
-          <span>战术地形与高程参数配置</span>
+          <span>// 战术地形与高程参数配置</span>
           <button class="btn btn-icon" id="btnCloseModal" style="width: 24px; height: 24px;">✕</button>
         </div>
         <div class="modal-body">
@@ -315,7 +347,7 @@
             <label class="form-label">随机种子 (Seed)</label>
             <div style="display: flex; gap: 8px;">
               <input type="number" class="form-input" id="cfgSeed" style="flex: 1;" value="1337" />
-              <button class="btn" id="btnGenSeed">随机</button>
+              <button class="btn" id="btnGenSeed">随机生成</button>
             </div>
           </div>
 

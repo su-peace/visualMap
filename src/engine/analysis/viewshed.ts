@@ -102,9 +102,9 @@ export class ViewshedAnalyzer {
       }
     }
 
-    // Observer center icon
-    ctx.fillStyle = '#3FD0FF';
-    ctx.strokeStyle = '#FFFFFF';
+    // Observer center icon (MW Tactical Amber)
+    ctx.fillStyle = '#E5A93C';
+    ctx.strokeStyle = '#080A0D';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(sCenter[0], sCenter[1], 6, 0, Math.PI * 2);

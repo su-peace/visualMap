@@ -76,18 +76,18 @@ export class CartoExporter {
     ctx.restore(); // Undo map clipping
 
     // 6. Draw Standard Military Border Neatlines
-    ctx.strokeStyle = isDark ? '#5CE1FF' : '#0F172A';
+    ctx.strokeStyle = isDark ? '#E5A93C' : '#0F172A';
     ctx.lineWidth = 2.5;
     ctx.strokeRect(mapX, mapY, mapW, mapH);
 
     // Outer double border
     ctx.lineWidth = 1;
-    ctx.strokeStyle = isDark ? 'rgba(92, 225, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)';
+    ctx.strokeStyle = isDark ? 'rgba(229, 169, 60, 0.45)' : 'rgba(15, 23, 42, 0.4)';
     ctx.strokeRect(mapX - 6, mapY - 6, mapW + 12, mapH + 12);
 
     // 7. Top Banner & Marginalia
-    ctx.font = 'bold 16px "Rajdhani", Inter, sans-serif';
-    ctx.fillStyle = isDark ? '#E6F1FA' : '#0F172A';
+    ctx.font = 'bold 16px "Chakra Petch", "Rajdhani", Inter, sans-serif';
+    ctx.fillStyle = isDark ? '#F1F5F9' : '#0F172A';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     const opName = project.name || 'OPERATION IRON VEIL';
@@ -95,9 +95,9 @@ export class CartoExporter {
 
     // Security Classification Badge
     ctx.font = 'bold 12px "JetBrains Mono", Consolas, monospace';
-    ctx.fillStyle = '#FF4D5E';
+    ctx.fillStyle = '#EF4444';
     ctx.textAlign = 'right';
-    ctx.fillText('SECRET // MILITARY DRILL EXERCISE ONLY', exportWidth - mapX, 18);
+    ctx.fillText('TOP SECRET // NOFORN // EXERCISE PHANTOM DART', exportWidth - mapX, 18);
 
     // 8. Scale & Compass & Legend
     CartoAccessories.renderCompass(ctx, exportWidth - mapX - 50, mapY + 60, vpExport, theme);

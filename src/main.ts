@@ -426,8 +426,14 @@ class VisualMapApp {
   public toggleTheme(): void {
     this.theme = this.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', this.theme);
-    const themeIcon = document.getElementById('themeIcon');
-    if (themeIcon) themeIcon.textContent = this.theme === 'dark' ? '☀️' : '🌙';
+    const themeIconSvg = document.getElementById('themeIconSvg');
+    if (themeIconSvg) {
+      if (this.theme === 'dark') {
+        themeIconSvg.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+      } else {
+        themeIconSvg.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      }
+    }
 
     // Re-render hillshading with new theme palette LUT
     if (this.heightfield) {
@@ -603,10 +609,10 @@ class VisualMapApp {
     const h = this.hudCanvas.height;
     this.hudCtx.clearRect(0, 0, w, h);
 
-    // 1. Draw Active Graphic Drawing In-Progress Line
+    // 1. Draw Active Graphic Drawing In-Progress Line (MW Tactical Amber)
     if (this.graphicTempPoints.length > 0) {
       this.hudCtx.save();
-      this.hudCtx.strokeStyle = this.theme === 'dark' ? '#3FD0FF' : '#0284C7';
+      this.hudCtx.strokeStyle = this.theme === 'dark' ? '#E5A93C' : '#B45309';
       this.hudCtx.lineWidth = 2;
       this.hudCtx.setLineDash([4, 4]);
       this.hudCtx.beginPath();
@@ -1143,8 +1149,8 @@ class VisualMapApp {
           <label class="form-label">战斗力完好率: <span id="readyValDisplay">${Math.round(selectedUnit.readiness * 100)}%</span></label>
           <input type="range" class="range-slider" id="editUnitReadiness" min="0" max="100" value="${Math.round(selectedUnit.readiness * 100)}" />
         </div>
-        <button class="btn" id="btnDeleteSelected" style="width: 100%; justify-content: center; color: var(--status-danger); border-color: var(--status-danger);">
-          ✕ 销毁/删除该单位
+        <button class="btn" id="btnDeleteSelected" style="width: 100%; justify-content: center; color: var(--status-danger); border-color: var(--status-danger); font-family: var(--font-header);">
+          [ ELIMINATE UNIT // 销毁该单位 ]
         </button>
       `;
 
@@ -1189,8 +1195,8 @@ class VisualMapApp {
             <option value="hostile" ${selectedGraphic.affiliation === 'hostile' ? 'selected' : ''}>敌方 (Hostile)</option>
           </select>
         </div>
-        <button class="btn" id="btnDeleteGraphic" style="width: 100%; justify-content: center; color: var(--status-danger); border-color: var(--status-danger);">
-          ✕ 删除该战术图元
+        <button class="btn" id="btnDeleteGraphic" style="width: 100%; justify-content: center; color: var(--status-danger); border-color: var(--status-danger); font-family: var(--font-header);">
+          [ REMOVE GRAPHIC // 删除图元 ]
         </button>
       `;
 

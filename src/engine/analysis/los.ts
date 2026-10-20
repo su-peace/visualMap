@@ -145,17 +145,17 @@ export class LOSAnalyzer {
     const sStart = proj.gridToScreen(result.start[0], result.start[1], vp);
     const sEnd = proj.gridToScreen(result.end[0], result.end[1], vp);
 
-    // Observer circle
-    ctx.fillStyle = '#3FD0FF';
-    ctx.strokeStyle = '#FFFFFF';
+    // Observer circle (MW Tactical Amber)
+    ctx.fillStyle = '#E5A93C';
+    ctx.strokeStyle = '#080A0D';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(sStart[0], sStart[1], 5, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // Target circle
-    ctx.fillStyle = result.hasObstruction ? '#FF4D5E' : '#3DDC97';
+    // Target circle (NVG Green / Thermal Red)
+    ctx.fillStyle = result.hasObstruction ? '#EF4444' : '#22C55E';
     ctx.beginPath();
     ctx.arc(sEnd[0], sEnd[1], 5, 0, Math.PI * 2);
     ctx.fill();

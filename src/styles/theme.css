@@ -1,13 +1,15 @@
 /* ==========================================================================
-   VISUALMAP / TACVIEW — Design Tokens & UI Stylesheet
-   Compliant with DESIGN.md specifications
+   VISUALMAP // TACVIEW — CALL OF DUTY: MODERN WARFARE DESIGN TOKENS
+   Version: 2.0 (Mil-Spec C4ISR Tactical Theme)
+   Compliant with DESIGN.md v2.0 specifications
    ========================================================================== */
 
 :root {
   /* Typography */
-  --font-ui: "Inter", "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "JetBrains Mono", "IBM Plex Mono", Consolas, monospace;
-  --font-title: "Rajdhani", "Oxanium", "Inter", sans-serif;
+  --font-header: "Chakra Petch", "Rajdhani", "Barlow Condensed", sans-serif;
+  --font-title: "Chakra Petch", "Rajdhani", sans-serif;
+  --font-mono: "JetBrains Mono", "Share Tech Mono", Consolas, monospace;
+  --font-ui: "Inter", "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
 
   /* Font Scales */
   --fs-2xs: 10px;
@@ -15,97 +17,129 @@
   --fs-sm: 12px;
   --fs-md: 14px;
   --fs-lg: 16px;
-  --fs-xl: 18px;
-  --fs-2xl: 22px;
+  --fs-xl: 20px;
+  --fs-2xl: 26px;
 
-  /* Radius & Shadows */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /* Tactical Radius: Minimalist & Chamfered */
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
   --radius-pill: 9999px;
 
-  /* Transition Durations */
-  --motion-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
-  --motion-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* 45° Chamfer Cut-corners */
+  --chamfer-sm: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+  --chamfer-md: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  --chamfer-lg: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+
+  /* Snap Transitions (Mechanical, zero float) */
+  --motion-snap: 70ms cubic-bezier(0.05, 0.9, 0.1, 1.0);
+  --motion-fast: 120ms cubic-bezier(0.1, 0.8, 0.2, 1.0);
+  --motion-normal: 180ms cubic-bezier(0.1, 0.8, 0.2, 1.0);
 }
 
 /* --------------------------------------------------------------------------
-   Tactical Dark Theme (Default)
+   Tactical Dark Theme (Call of Duty: Modern Warfare Inspired - Default)
    -------------------------------------------------------------------------- */
 :root,
 [data-theme="dark"] {
-  --bg-void: #05080D;
-  --bg-base: #0A1018;
-  --bg-panel: rgba(12, 20, 30, 0.82);
-  --bg-panel-solid: #0F1823;
-  --bg-elevated: #152232;
-  --bg-hover: rgba(63, 208, 255, 0.12);
+  /* Base Armor Plates */
+  --bg-void: #080A0D;
+  --bg-base: #0E1116;
+  --bg-panel: rgba(16, 20, 26, 0.94);
+  --bg-panel-solid: #13171F;
+  --bg-elevated: #1B212B;
+  --bg-surface-high: #242C38;
+  --bg-hover: rgba(229, 169, 60, 0.12);
+  --bg-active: rgba(229, 169, 60, 0.22);
 
-  --line-subtle: rgba(120, 170, 210, 0.12);
-  --line-default: rgba(120, 170, 210, 0.25);
-  --line-strong: rgba(120, 200, 255, 0.50);
+  /* Tactical Lines & Reticles */
+  --line-ghost: rgba(148, 163, 184, 0.10);
+  --line-subtle: rgba(148, 163, 184, 0.18);
+  --line-default: rgba(148, 163, 184, 0.28);
+  --line-bold: rgba(148, 163, 184, 0.50);
+  --line-strong: #E5A93C;
 
-  --text-primary: #E6F1FA;
-  --text-secondary: #8FA6BA;
-  --text-muted: #506478;
-  --text-accent: #5CE1FF;
+  /* Typography Colors */
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #526071;
+  --text-accent: #E5A93C;
+  --text-inverse: #080A0D;
 
-  --accent: #3FD0FF;
-  --accent-glow: rgba(63, 208, 255, 0.35);
-  --accent-dim: #1B6F8A;
+  /* Signature Tactical Amber (MW Warzone Gold) */
+  --accent: #E5A93C;
+  --accent-bright: #F5B74F;
+  --accent-dim: #99681E;
+  --accent-glow: rgba(229, 169, 60, 0.40);
 
-  --iff-friend: #4DA8FF;
-  --iff-hostile: #FF4D5E;
-  --iff-neutral: #3DDC97;
-  --iff-unknown: #FFD84D;
+  /* NATO / MIL-STD-2525 Symbology Colors */
+  --iff-friend: #22C55E;        /* NVG Phosphor Green */
+  --iff-friend-dim: rgba(34, 197, 94, 0.20);
+  --iff-hostile: #EF4444;       /* Thermal Red */
+  --iff-hostile-dim: rgba(239, 68, 68, 0.22);
+  --iff-neutral: #38BDF8;       /* Air Corridor Cyan */
+  --iff-unknown: #FACC15;       /* Warning Amber-Yellow */
 
-  --status-ok: #3DDC97;
-  --status-info: #5CE1FF;
-  --status-warn: #FFB547;
-  --status-danger: #FF4D5E;
-  --status-critical: #FF2E88;
+  /* Telemetry Status Signals */
+  --status-ok: #22C55E;
+  --status-info: #38BDF8;
+  --status-warn: #E5A93C;
+  --status-danger: #EF4444;
+  --status-critical: #E11D48;
 
-  --shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.65);
-  --shadow-glow: 0 0 12px var(--accent-glow);
+  /* Shadows & Edge Rings */
+  --shadow-panel: 0 12px 36px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 10px var(--accent-glow);
+  --shadow-focus: 0 0 0 1px var(--accent), 0 0 8px var(--accent-glow);
 }
 
 /* --------------------------------------------------------------------------
-   Military Topo Paper Theme (Light Mode)
+   Military Topo Paper Theme (NATO Field Map Light Mode)
    -------------------------------------------------------------------------- */
 [data-theme="light"] {
-  --bg-void: #D8DFE8;
-  --bg-base: #EEF2F6;
-  --bg-panel: rgba(255, 255, 255, 0.90);
+  --bg-void: #CCD3DC;
+  --bg-base: #E3E8EE;
+  --bg-panel: rgba(248, 250, 252, 0.95);
   --bg-panel-solid: #FFFFFF;
-  --bg-elevated: #E5EBF2;
-  --bg-hover: rgba(2, 132, 199, 0.10);
+  --bg-elevated: #F1F5F9;
+  --bg-surface-high: #FFFFFF;
+  --bg-hover: rgba(194, 120, 3, 0.12);
+  --bg-active: rgba(194, 120, 3, 0.22);
 
-  --line-subtle: rgba(40, 70, 100, 0.14);
-  --line-default: rgba(40, 70, 100, 0.28);
-  --line-strong: rgba(10, 100, 180, 0.65);
+  --line-ghost: rgba(30, 41, 59, 0.10);
+  --line-subtle: rgba(30, 41, 59, 0.16);
+  --line-default: rgba(30, 41, 59, 0.28);
+  --line-bold: rgba(30, 41, 59, 0.55);
+  --line-strong: #B45309;
 
   --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --text-accent: #0284C7;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --text-accent: #B45309;
+  --text-inverse: #FFFFFF;
 
-  --accent: #0284C7;
-  --accent-glow: rgba(2, 132, 199, 0.25);
-  --accent-dim: #BAE6FD;
+  --accent: #B45309;
+  --accent-bright: #D97706;
+  --accent-dim: #78350F;
+  --accent-glow: rgba(180, 83, 9, 0.25);
 
-  --iff-friend: #0072CE;
-  --iff-hostile: #D92B3A;
-  --iff-neutral: #009F6B;
-  --iff-unknown: #DF9B00;
+  --iff-friend: #15803D;
+  --iff-friend-dim: rgba(21, 128, 61, 0.15);
+  --iff-hostile: #DC2626;
+  --iff-hostile-dim: rgba(220, 38, 38, 0.15);
+  --iff-neutral: #0369A1;
+  --iff-unknown: #CA8A04;
 
-  --status-ok: #059669;
-  --status-info: #0284C7;
-  --status-warn: #D97706;
+  --status-ok: #15803D;
+  --status-info: #0369A1;
+  --status-warn: #B45309;
   --status-danger: #DC2626;
-  --status-critical: #BE123C;
+  --status-critical: #991B1B;
 
-  --shadow-panel: 0 8px 30px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 10px var(--accent-glow);
+  --shadow-panel: 0 8px 30px rgba(15, 23, 42, 0.15);
+  --shadow-glow: 0 0 8px var(--accent-glow);
+  --shadow-focus: 0 0 0 1px var(--accent), 0 0 8px var(--accent-glow);
 }
 
 /* --------------------------------------------------------------------------
@@ -136,6 +170,22 @@ html, body {
   flex-direction: column;
 }
 
+/* Custom Tactical Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-bold);
+  border-radius: 1px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 /* --------------------------------------------------------------------------
    Viewport & Canvas Stack
    -------------------------------------------------------------------------- */
@@ -159,19 +209,29 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   TopBar (Command & Status Bar)
+   TopBar (Command & Status Bar - Modern Warfare Header)
    -------------------------------------------------------------------------- */
 .top-bar {
   height: 48px;
-  background: var(--bg-panel);
-  backdrop-filter: blur(12px);
+  background: var(--bg-panel-solid);
   border-bottom: 1px solid var(--line-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.top-bar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--line-default) 30%, var(--line-subtle) 100%);
 }
 
 .brand-section {
@@ -181,44 +241,80 @@ html, body {
 }
 
 .brand-logo {
-  font-family: var(--font-title);
+  font-family: var(--font-header);
   font-weight: 700;
-  font-size: var(--fs-lg);
-  letter-spacing: 0.12em;
+  font-size: var(--fs-md);
+  letter-spacing: 0.14em;
   color: var(--accent);
   display: flex;
   align-items: center;
   gap: 6px;
+  text-transform: uppercase;
+}
+
+.brand-logo .brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--accent);
+  border-radius: 1px;
+  font-size: 10px;
 }
 
 .op-badge {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-2xs);
   color: var(--text-secondary);
   background: var(--bg-elevated);
   padding: 3px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   border: 1px solid var(--line-subtle);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .top-middle-telemetry {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
 }
 
 .telemetry-item {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--text-secondary);
+}
+
+.telemetry-item .tele-tag {
+  font-size: 9px;
+  padding: 1px 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-ghost);
+  color: var(--text-muted);
+  border-radius: 1px;
 }
 
 .telemetry-val {
-  color: var(--text-accent);
+  color: var(--text-primary);
   font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.telemetry-val.accent {
+  color: var(--text-accent);
+}
+
+.telemetry-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  display: inline-block;
 }
 
 .top-actions {
@@ -228,51 +324,67 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   Standard Buttons & Controls
+   Standard Buttons & Mil-Spec Controls
    -------------------------------------------------------------------------- */
 .btn {
   height: 30px;
   padding: 0 10px;
-  font-family: var(--font-ui);
+  font-family: var(--font-header);
   font-size: var(--fs-xs);
-  font-weight: 500;
-  border-radius: var(--radius-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-xs);
   border: 1px solid var(--line-default);
   background: var(--bg-elevated);
   color: var(--text-primary);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
-  transition: all var(--motion-fast);
+  transition: all var(--motion-snap);
+  clip-path: var(--chamfer-sm);
 }
 
 .btn:hover {
   background: var(--bg-hover);
-  border-color: var(--line-strong);
+  border-color: var(--accent);
   color: var(--text-accent);
 }
 
 .btn:active {
-  transform: scale(0.97);
+  transform: translateY(1px);
+  background: var(--bg-active);
 }
 
+.btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Primary MW Amber Button */
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #05080D;
-  font-weight: 600;
+  color: #080A0D;
+  font-weight: 700;
 }
 
 .btn-primary:hover {
-  background: #5CE1FF;
-  box-shadow: var(--shadow-glow);
-  color: #05080D;
+  background: var(--accent-bright);
+  color: #080A0D;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .btn-icon {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   justify-content: center;
 }
@@ -280,22 +392,21 @@ html, body {
 .btn.active {
   background: var(--accent-dim);
   border-color: var(--accent);
-  color: var(--text-primary);
+  color: #FFFFFF;
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
 /* --------------------------------------------------------------------------
-   Left ToolRail (HUD Actions)
+   Left ToolRail (HUD Operations Utility Dock)
    -------------------------------------------------------------------------- */
 .tool-rail {
   position: absolute;
   top: 60px;
   left: 14px;
-  width: 48px;
+  width: 44px;
   background: var(--bg-panel);
-  backdrop-filter: blur(12px);
   border: 1px solid var(--line-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xs);
   box-shadow: var(--shadow-panel);
   z-index: 90;
   display: flex;
@@ -305,17 +416,39 @@ html, body {
   align-items: center;
 }
 
+/* Reticle brackets on top and bottom of tool rail */
+.tool-rail::before {
+  content: "⌜";
+  position: absolute;
+  top: -7px;
+  left: -4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--line-bold);
+  pointer-events: none;
+}
+.tool-rail::after {
+  content: "⌟";
+  position: absolute;
+  bottom: -7px;
+  right: -4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--line-bold);
+  pointer-events: none;
+}
+
 .tool-group-divider {
-  width: 32px;
+  width: 26px;
   height: 1px;
   background: var(--line-subtle);
   margin: 4px 0;
 }
 
 .tool-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-xs);
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
@@ -323,8 +456,16 @@ html, body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--motion-fast);
+  transition: all var(--motion-snap);
   position: relative;
+}
+
+.tool-btn svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
 }
 
 .tool-btn:hover {
@@ -333,30 +474,32 @@ html, body {
 }
 
 .tool-btn.active {
-  background: var(--bg-elevated);
+  background: var(--bg-active);
   border-color: var(--accent);
   color: var(--accent);
-  box-shadow: var(--shadow-glow);
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 0 8px rgba(229, 169, 60, 0.35);
 }
 
-/* Tooltip on hover */
+/* Tooltip on hover (MW Tactical Style) */
 .tool-btn[data-tip]:hover::after {
   content: attr(data-tip);
   position: absolute;
-  left: 50px;
+  left: 48px;
   top: 50%;
   transform: translateY(-50%);
   background: var(--bg-panel-solid);
-  border: 1px solid var(--line-default);
+  border: 1px solid var(--line-bold);
   color: var(--text-primary);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  padding: 4px 10px;
   font-size: var(--fs-2xs);
   font-family: var(--font-mono);
+  letter-spacing: 0.05em;
   white-space: nowrap;
   pointer-events: none;
   z-index: 200;
   box-shadow: var(--shadow-panel);
+  border-left: 2px solid var(--accent);
 }
 
 /* --------------------------------------------------------------------------
@@ -365,18 +508,17 @@ html, body {
 .sub-toolbar {
   position: absolute;
   top: 60px;
-  left: 70px;
+  left: 66px;
   background: var(--bg-panel);
-  backdrop-filter: blur(14px);
   border: 1px solid var(--line-default);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
   box-shadow: var(--shadow-panel);
   z-index: 89;
   display: none;
   flex-direction: column;
-  gap: 8px;
-  min-width: 170px;
+  gap: 10px;
+  min-width: 190px;
 }
 
 .sub-toolbar.open {
@@ -384,29 +526,48 @@ html, body {
 }
 
 .sub-toolbar-title {
-  font-family: var(--font-title);
+  font-family: var(--font-header);
   font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text-accent);
+  letter-spacing: 0.1em;
+  color: var(--accent);
   border-bottom: 1px solid var(--line-subtle);
   padding-bottom: 4px;
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sub-toolbar-title::before {
+  content: "//";
+  margin-right: 4px;
+  color: var(--text-muted);
 }
 
 .sub-item-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 6px 10px;
   font-size: var(--fs-xs);
-  font-family: var(--font-ui);
+  font-family: var(--font-header);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text-primary);
   background: var(--bg-elevated);
   border: 1px solid var(--line-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   cursor: pointer;
-  transition: all var(--motion-fast);
+  transition: all var(--motion-snap);
+}
+
+.sub-item-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
 }
 
 .sub-item-btn:hover {
@@ -419,6 +580,7 @@ html, body {
   border-color: var(--accent);
   background: var(--accent-dim);
   color: #FFFFFF;
+  border-left: 3px solid var(--accent);
 }
 
 /* --------------------------------------------------------------------------
@@ -428,12 +590,11 @@ html, body {
   position: absolute;
   top: 60px;
   right: 14px;
-  width: 290px;
+  width: 310px;
   max-height: calc(100vh - 120px);
   background: var(--bg-panel);
-  backdrop-filter: blur(14px);
   border: 1px solid var(--line-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xs);
   box-shadow: var(--shadow-panel);
   z-index: 90;
   display: flex;
@@ -443,12 +604,12 @@ html, body {
 }
 
 .intel-panel.collapsed {
-  transform: translateX(310px);
+  transform: translateX(330px);
 }
 
 .intel-header {
   padding: 10px 14px;
-  background: var(--bg-elevated);
+  background: var(--bg-panel-solid);
   border-bottom: 1px solid var(--line-default);
   display: flex;
   align-items: center;
@@ -456,22 +617,34 @@ html, body {
 }
 
 .intel-title {
-  font-family: var(--font-title);
+  font-family: var(--font-header);
   font-weight: 700;
   font-size: var(--fs-sm);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--accent);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  text-transform: uppercase;
+}
+
+.intel-title .intel-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  background: var(--bg-elevated);
+  padding: 1px 4px;
+  color: var(--text-muted);
+  border: 1px solid var(--line-ghost);
 }
 
 .intel-body {
-  padding: 12px 14px;
+  padding: 14px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 .intel-section {
@@ -481,12 +654,21 @@ html, body {
 }
 
 .section-label {
-  font-family: var(--font-title);
+  font-family: var(--font-header);
   font-size: var(--fs-2xs);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--text-secondary);
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label::before {
+  content: "//";
+  margin-right: 4px;
+  color: var(--accent);
 }
 
 /* Force balance stats cards */
@@ -497,13 +679,14 @@ html, body {
 }
 
 .force-card {
-  padding: 8px;
-  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  border-radius: var(--radius-xs);
   background: var(--bg-elevated);
   border: 1px solid var(--line-subtle);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
 }
 
 .force-card.friend {
@@ -519,11 +702,14 @@ html, body {
   font-size: var(--fs-xl);
   font-weight: 700;
   color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .force-desc {
+  font-family: var(--font-mono);
   font-size: var(--fs-2xs);
   color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 /* Form Controls */
@@ -537,23 +723,26 @@ html, body {
   font-size: var(--fs-2xs);
   font-family: var(--font-mono);
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .form-input, .form-select {
   height: 28px;
   background: var(--bg-elevated);
   border: 1px solid var(--line-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   padding: 0 8px;
   outline: none;
-  transition: border-color var(--motion-fast);
+  transition: border-color var(--motion-snap);
 }
 
 .form-input:focus, .form-select:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
 }
 
 .range-wrap {
@@ -566,14 +755,16 @@ html, body {
   flex: 1;
   accent-color: var(--accent);
   cursor: pointer;
+  height: 4px;
 }
 
 .range-val {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-accent);
-  min-width: 38px;
+  min-width: 44px;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Layer visibility checklist */
@@ -581,13 +772,22 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 5px 6px;
   font-size: var(--fs-xs);
+  background: rgba(14, 18, 24, 0.4);
+  border: 1px solid var(--line-ghost);
+  border-radius: var(--radius-xs);
+}
+
+.layer-row:hover {
+  border-color: var(--line-default);
 }
 
 .layer-switch {
   cursor: pointer;
   accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
 }
 
 /* --------------------------------------------------------------------------
@@ -595,8 +795,7 @@ html, body {
    -------------------------------------------------------------------------- */
 .bottom-bar {
   height: 32px;
-  background: var(--bg-panel);
-  backdrop-filter: blur(12px);
+  background: var(--bg-panel-solid);
   border-top: 1px solid var(--line-default);
   display: flex;
   align-items: center;
@@ -606,6 +805,7 @@ html, body {
   font-family: var(--font-mono);
   font-size: var(--fs-2xs);
   color: var(--text-secondary);
+  letter-spacing: 0.04em;
 }
 
 .probe-cluster {
@@ -620,9 +820,14 @@ html, body {
   gap: 5px;
 }
 
+.probe-item span:first-child {
+  color: var(--text-muted);
+}
+
 .probe-val {
   color: var(--text-accent);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 /* --------------------------------------------------------------------------
@@ -636,9 +841,8 @@ html, body {
   width: 620px;
   height: 180px;
   background: var(--bg-panel);
-  backdrop-filter: blur(14px);
   border: 1px solid var(--line-strong);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xs);
   box-shadow: var(--shadow-panel);
   z-index: 95;
   display: none;
@@ -652,16 +856,17 @@ html, body {
 .profile-header {
   height: 28px;
   padding: 0 10px;
-  background: var(--bg-elevated);
+  background: var(--bg-panel-solid);
   border-bottom: 1px solid var(--line-default);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: var(--font-title);
+  font-family: var(--font-header);
   font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text-accent);
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
 }
 
 .profile-chart-canvas {
@@ -670,13 +875,12 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   Settings Modal Dialog
+   Settings Modal Dialog (Tactical Terminal Box)
    -------------------------------------------------------------------------- */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(8, 10, 13, 0.75);
   display: none;
   align-items: center;
   justify-content: center;
@@ -690,12 +894,35 @@ html, body {
 .modal-box {
   width: 440px;
   background: var(--bg-panel-solid);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--line-bold);
+  border-radius: var(--radius-xs);
   box-shadow: var(--shadow-panel);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+}
+
+.modal-box::before {
+  content: "⌜";
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.modal-box::after {
+  content: "⌟";
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  pointer-events: none;
 }
 
 .modal-header {
@@ -705,10 +932,12 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: var(--font-title);
+  font-family: var(--font-header);
   font-weight: 700;
   font-size: var(--fs-md);
+  letter-spacing: 0.08em;
   color: var(--accent);
+  text-transform: uppercase;
 }
 
 .modal-body {
@@ -716,6 +945,8 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 .modal-footer {

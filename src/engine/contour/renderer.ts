@@ -56,18 +56,18 @@ export class ContourRenderer {
 
     ctx.save();
 
-    // Style tokens based on theme
+    // Style tokens based on theme (Modern Warfare Mil-Spec)
     const isDark = theme === 'dark';
     const indexStroke = isDark
-      ? 'rgba(92, 225, 255, 0.82)'
-      : 'rgba(122, 75, 42, 0.85)';
+      ? 'rgba(229, 169, 60, 0.70)'
+      : 'rgba(133, 77, 39, 0.88)';
     const interStroke = isDark
-      ? 'rgba(92, 225, 255, 0.32)'
-      : 'rgba(122, 75, 42, 0.38)';
+      ? 'rgba(148, 163, 184, 0.28)'
+      : 'rgba(133, 77, 39, 0.35)';
     const labelBg = isDark
-      ? 'rgba(10, 16, 24, 0.90)'
+      ? 'rgba(14, 18, 24, 0.94)'
       : 'rgba(247, 245, 235, 0.92)';
-    const labelColor = isDark ? '#E6F1FA' : '#4A2A18';
+    const labelColor = isDark ? '#E5A93C' : '#4A2A18';
 
     // 1. Ultra-fast Path2D native rendering
     if (compiled) {

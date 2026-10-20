@@ -18,13 +18,13 @@ export class MGRSGridRenderer {
 
     const isDark = theme === 'dark';
     const mainGridColor = isDark
-      ? 'rgba(120, 185, 230, 0.25)'
+      ? 'rgba(148, 163, 184, 0.24)'
       : 'rgba(30, 45, 65, 0.22)';
     const subGridColor = isDark
-      ? 'rgba(120, 185, 230, 0.10)'
+      ? 'rgba(148, 163, 184, 0.10)'
       : 'rgba(30, 45, 65, 0.10)';
-    const textColor = isDark ? '#8FA6BA' : '#475569';
-    const textBg = isDark ? 'rgba(10, 16, 24, 0.85)' : 'rgba(255, 255, 255, 0.85)';
+    const textColor = isDark ? '#94A3B8' : '#475569';
+    const textBg = isDark ? 'rgba(14, 18, 24, 0.92)' : 'rgba(255, 255, 255, 0.88)';
 
     // Step in world grid units
     // Assume 1024 grid units = 10km (10,000m)
@@ -49,7 +49,7 @@ export class MGRSGridRenderer {
 
       ctx.beginPath();
       ctx.strokeStyle = isDark
-        ? `rgba(120, 185, 230, ${0.12 * subAlpha})`
+        ? `rgba(148, 163, 184, ${0.10 * subAlpha})`
         : `rgba(30, 45, 65, ${0.12 * subAlpha})`;
       ctx.lineWidth = 0.5;
 

@@ -149,7 +149,7 @@ export class TerrainProbe {
     ctx.strokeRect(badgeX, badgeY, badgeW, badgeH);
 
     ctx.font = 'bold 9px "JetBrains Mono", Consolas, monospace';
-    ctx.fillStyle = isDark ? '#3FD0FF' : '#0284C7';
+    ctx.fillStyle = isDark ? '#E5A93C' : '#B45309';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillText(`ELV: ${probe.elevation}m`, badgeX + 5, badgeY + 4);

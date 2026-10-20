@@ -85,10 +85,10 @@ export class ElevationProfileAnalyzer {
     ctx.clearRect(0, 0, width, height);
 
     const isDark = theme === 'dark';
-    const textColor = isDark ? '#8FA6BA' : '#475569';
-    const gridColor = isDark ? 'rgba(120, 170, 210, 0.15)' : 'rgba(40, 70, 100, 0.15)';
-    const lineColor = isDark ? '#3FD0FF' : '#0284C7';
-    const fillColor = isDark ? 'rgba(63, 208, 255, 0.22)' : 'rgba(2, 132, 199, 0.20)';
+    const textColor = isDark ? '#94A3B8' : '#475569';
+    const gridColor = isDark ? 'rgba(148, 163, 184, 0.15)' : 'rgba(40, 70, 100, 0.15)';
+    const lineColor = isDark ? '#E5A93C' : '#B45309';
+    const fillColor = isDark ? 'rgba(229, 169, 60, 0.18)' : 'rgba(180, 83, 9, 0.15)';
 
     const padLeft = 45;
     const padRight = 20;

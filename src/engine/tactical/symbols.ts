@@ -14,32 +14,32 @@ export class MilitarySymbolRenderer {
     switch (affiliation) {
       case 'friend':
         return {
-          fill: isDark ? 'rgba(20, 60, 110, 0.85)' : 'rgba(215, 235, 255, 0.95)',
-          stroke: isDark ? '#4DA8FF' : '#005FB8',
-          icon: isDark ? '#E6F1FA' : '#003366',
-          halo: isDark ? 'rgba(77, 168, 255, 0.4)' : 'rgba(0, 95, 184, 0.3)',
+          fill: isDark ? 'rgba(34, 197, 94, 0.22)' : 'rgba(21, 128, 61, 0.15)',
+          stroke: isDark ? '#22C55E' : '#15803D',
+          icon: isDark ? '#F1F5F9' : '#0F172A',
+          halo: isDark ? 'rgba(34, 197, 94, 0.45)' : 'rgba(21, 128, 61, 0.3)',
         };
       case 'hostile':
         return {
-          fill: isDark ? 'rgba(110, 20, 30, 0.85)' : 'rgba(255, 220, 225, 0.95)',
-          stroke: isDark ? '#FF4D5E' : '#C71D2D',
+          fill: isDark ? 'rgba(239, 68, 68, 0.25)' : 'rgba(220, 38, 38, 0.18)',
+          stroke: isDark ? '#EF4444' : '#DC2626',
           icon: isDark ? '#FFFFFF' : '#800A15',
-          halo: isDark ? 'rgba(255, 77, 94, 0.4)' : 'rgba(199, 29, 45, 0.3)',
+          halo: isDark ? 'rgba(239, 68, 68, 0.5)' : 'rgba(220, 38, 38, 0.35)',
         };
       case 'neutral':
         return {
-          fill: isDark ? 'rgba(20, 90, 60, 0.85)' : 'rgba(215, 250, 235, 0.95)',
-          stroke: isDark ? '#3DDC97' : '#00875A',
-          icon: isDark ? '#E6F1FA' : '#004D34',
-          halo: isDark ? 'rgba(61, 220, 151, 0.4)' : 'rgba(0, 135, 90, 0.3)',
+          fill: isDark ? 'rgba(56, 189, 248, 0.20)' : 'rgba(3, 105, 161, 0.15)',
+          stroke: isDark ? '#38BDF8' : '#0369A1',
+          icon: isDark ? '#F1F5F9' : '#033355',
+          halo: isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(3, 105, 161, 0.25)',
         };
       case 'unknown':
       default:
         return {
-          fill: isDark ? 'rgba(110, 90, 20, 0.85)' : 'rgba(255, 245, 215, 0.95)',
-          stroke: isDark ? '#FFD84D' : '#C48200',
+          fill: isDark ? 'rgba(250, 204, 21, 0.22)' : 'rgba(202, 138, 4, 0.15)',
+          stroke: isDark ? '#FACC15' : '#CA8A04',
           icon: isDark ? '#FFFFFF' : '#614000',
-          halo: isDark ? 'rgba(255, 216, 77, 0.4)' : 'rgba(196, 130, 0, 0.3)',
+          halo: isDark ? 'rgba(250, 204, 21, 0.45)' : 'rgba(202, 138, 4, 0.3)',
         };
     }
   }
@@ -68,10 +68,10 @@ export class MilitarySymbolRenderer {
       ctx.globalAlpha = 0.55;
     }
 
-    // Selection highlight glow & brackets
+    // Selection highlight glow & brackets (Modern Warfare Tactical Amber)
     if (unit.selected) {
       ctx.save();
-      ctx.strokeStyle = theme === 'dark' ? '#3FD0FF' : '#0284C7';
+      ctx.strokeStyle = theme === 'dark' ? '#E5A93C' : '#B45309';
       ctx.lineWidth = 2;
       const bPad = half + 7;
       const bLen = 6;
